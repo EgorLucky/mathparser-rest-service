@@ -1,0 +1,46 @@
+<meta charset="utf8">
+
+<textarea id = "expressionInputElement"></textarea>
+<button  onclick = "computeButtonClicked()">
+    Посчитать
+</button>
+
+<p id = "resultTextElement"></p>
+
+<script>
+    function computeButtonClicked()
+    {
+        var textarea = document.getElementById("expressionInputElement");
+
+        requestfinished = function()
+        {
+            var resultTextElement = document.getElementById("resultTextElement");
+            var responseObj = JSON.parse(this.responseText);
+            if(this.status == 200)
+            {
+                resultTextElement.innerText = responseObj.result;
+            }
+            else
+            {
+                resultTextElement.innerText = "Ошибка! Ответ от сервера: " + responseObj.message;
+            }
+        };
+
+        sendRequestToComputeExpression(textarea.value, requestfinished);
+    }
+
+    function sendRequestToComputeExpression(expression, requestFinishedDelegate)
+    {
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("post", "/api/math/computeExpression", true);
+
+        xhr.onload = requestFinishedDelegate;
+
+        var payload = { expression: expression };
+
+        payloadString = JSON.stringify(payload);
+        xhr.setRequestHeader("content-type", "application/json");
+        xhr.send(payloadString);
+    }
+</script>

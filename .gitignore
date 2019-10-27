@@ -1,0 +1,6 @@
+RestService/obj/*
+RestService/bin/*
+RestService/.vscode/*
+MathParser/obj/*
+MathParser/bin/*
+MathParser/.vscode/*
