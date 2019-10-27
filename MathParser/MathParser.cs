@@ -14,8 +14,10 @@ namespace MathParserClasses
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("ru-RU");
             mathExpression = mathExpression.Replace(" ", "")
-                                            .Replace("-", "+-1*")
                                             .Replace('.', ',');
+
+            if(!mathExpression.Contains("+-1*"))
+                mathExpression = mathExpression.Replace("-", "+-1*");
                                             
             if (!Check.IsBracketsAreBalanced(mathExpression)) 
                 throw new Exception("brackets are not balanced");
