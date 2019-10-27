@@ -4,3 +4,5 @@ RestService/.vscode/*
 MathParser/obj/*
 MathParser/bin/*
 MathParser/.vscode/*
+.vscode/launch.json
+.vscode/tasks.json

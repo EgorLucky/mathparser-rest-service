@@ -1,7 +1,9 @@
 ﻿﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MathParserClasses
@@ -10,6 +12,7 @@ namespace MathParserClasses
     {
         public static IFunction Parse(string mathExpression)
         {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("ru-RU");
             mathExpression = mathExpression.Replace(" ", "")
                                             .Replace("-", "+-1*")
                                             .Replace('.', ',');
