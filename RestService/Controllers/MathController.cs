@@ -15,7 +15,8 @@ namespace RestService.Controllers
         [HttpPost("computeExpression")]
         public ActionResult ComputeExpression([FromBody] ComputeExpressionRequestModel request)
         {
-            try{
+            try
+            {
                 var result = MathParserClasses.MathParser.Parse(request.Expression).ComputeValue();
 
                 return Ok(new { 
@@ -25,6 +26,19 @@ namespace RestService.Controllers
             catch(Exception e)
             {
                 return StatusCode(500, new { message = e.Message});
+            }
+        }
+
+        [HttpGet("test")]
+        public ActionResult Test([FromServices] PseudoConfig request)
+        {
+            try
+            {
+                return Ok(request);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new { message = e.Message });
             }
         }
 
