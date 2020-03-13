@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MathParser;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,9 +10,9 @@ namespace MathParserClasses
     public class Tg : IFunction
     {
         public IFunction Argument { get; set; }
-        public double ComputeValue()
+        public double ComputeValue(ICollection<Parameter> variables)
         {
-            return Math.Tan(Argument.ComputeValue());
+            return Math.Tan(Argument.ComputeValue(variables));
         }
     }
 }

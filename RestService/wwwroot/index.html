@@ -1,9 +1,7 @@
-<meta charset="utf8">
-
+﻿<meta charset="utf8">
+<textarea id="parametersJson"></textarea>
 <textarea id = "expressionInputElement"></textarea>
-<button  onclick = "computeButtonClicked()">
-    Посчитать
-</button>
+<button  onclick = "computeButtonClicked()">Посчитать</button>
 
 <p id = "resultTextElement"></p>
 
@@ -11,7 +9,7 @@
     function computeButtonClicked()
     {
         var textarea = document.getElementById("expressionInputElement");
-
+        var parameterTextArea = document.getElementById("parametersJson");
         requestfinished = function()
         {
             var resultTextElement = document.getElementById("resultTextElement");
@@ -26,10 +24,10 @@
             }
         };
 
-        sendRequestToComputeExpression(textarea.value, requestfinished);
+        sendRequestToComputeExpression(textarea.value, JSON.parse(parameterTextArea.value), requestfinished);
     }
 
-    function sendRequestToComputeExpression(expression, requestFinishedDelegate)
+    function sendRequestToComputeExpression(expression, parameters,  requestFinishedDelegate)
     {
         var xhr = new XMLHttpRequest();
 
@@ -37,7 +35,7 @@
 
         xhr.onload = requestFinishedDelegate;
 
-        var payload = { expression: expression };
+        var payload = { expression: expression, parameters: parameters };
 
         payloadString = JSON.stringify(payload);
         xhr.setRequestHeader("content-type", "application/json");

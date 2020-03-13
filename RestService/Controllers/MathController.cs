@@ -17,7 +17,8 @@ namespace RestService.Controllers
         {
             try
             {
-                var result = MathParserClasses.MathParser.Parse(request.Expression).ComputeValue();
+                var variables = request.Parameters.Select(p => p.Variable).ToList();
+                var result = MathParserClasses.MathParser.Parse(request.Expression, variables).ComputeValue(request.Parameters);
 
                 return Ok(new { 
                     result

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MathParser;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace MathParserClasses
 {
     public interface IFunction
     {
-        double ComputeValue();
+        double ComputeValue(ICollection<Parameter> variables);
     }
 }

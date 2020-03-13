@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MathParser;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,16 +9,16 @@ namespace MathParserClasses
 {
     
 
-    public class Sum:IFunction
+    public class Sum : IFunction
     {
         public Sum()
         {
             Terms = new List<IFunction>();
         }
         public List<IFunction> Terms { get; set; }
-        public double ComputeValue()
+        public double ComputeValue(ICollection<Parameter> variables)
         {
-            return Terms.Sum(p => p.ComputeValue());
+            return Terms.Sum(p => p.ComputeValue(variables));
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MathParser;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,10 +14,10 @@ namespace MathParserClasses
             Factors = new List<IFunction>();
         }
         public List<IFunction> Factors { get; set; }
-        public double ComputeValue()
+        public double ComputeValue(ICollection<Parameter> variables)
         {
             var result = 1.0;
-            Factors.ForEach(s => result *= s.ComputeValue());
+            Factors.ForEach(s => result *= s.ComputeValue(variables));
             return result;
         }
     }

@@ -6,3 +6,4 @@ MathParser/bin/*
 MathParser/.vscode/*
 .vscode/launch.json
 .vscode/tasks.json
+.vs/

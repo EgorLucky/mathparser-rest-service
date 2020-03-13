@@ -1,4 +1,5 @@
-﻿﻿using System;
+﻿using MathParser;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace MathParserClasses
 {
     public static class MathParser
     {
-        public static IFunction Parse(string mathExpression)
+        public static IFunction Parse(string mathExpression, ICollection<Variable> variables)
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("ru-RU");
             mathExpression = mathExpression.Replace(" ", "")
@@ -24,12 +25,12 @@ namespace MathParserClasses
                 
             mathExpression = mathExpression.ToLower();
             
-            Sum result = ParseSum(mathExpression);
+            Sum result = ParseSum(mathExpression, variables);
             
             return result;
         }
         
-        static Sum ParseSum(string expression)
+        static Sum ParseSum(string expression, ICollection<Variable> variables)
         {
             if (Check.IsExpressionInBrackets(expression)) 
                 expression = expression.Remove(expression.Length - 1, 1)
@@ -48,7 +49,7 @@ namespace MathParserClasses
                     balance++;
                 if(ch == '+' && balance == 0)
                 {
-                    result.Terms.Add(ParseProduct(term)); 
+                    result.Terms.Add(ParseProduct(term, variables)); 
                     term = "";
                     continue;
                 }
@@ -56,14 +57,14 @@ namespace MathParserClasses
                 term += ch;
                 if (counter == expression.Length)
                 {
-                    result.Terms.Add(ParseProduct(term));
+                    result.Terms.Add(ParseProduct(term, variables));
                     continue;
                 }
             }
             return result;
         }
         
-        static Product ParseProduct(string expression)
+        static Product ParseProduct(string expression, ICollection<Variable> variables)
         {
             if (Check.IsExpressionInBrackets(expression)) 
                 expression = expression.Remove(expression.Length - 1, 1)
@@ -84,7 +85,7 @@ namespace MathParserClasses
                     
                 if (ch == '*' && balance == 0)
                 {
-                    result.Factors.Add(ParseFunction(factor)); 
+                    result.Factors.Add(ParseFunction(factor, variables)); 
                     factor = "";
                     continue;
                 }
@@ -92,43 +93,46 @@ namespace MathParserClasses
                 factor += ch;
                 if (counter == expression.Length)
                 {
-                    result.Factors.Add(ParseFunction(factor));
+                    result.Factors.Add(ParseFunction(factor, variables));
                     continue;
                 }
             }
             return result;
         }
         
-        static IFunction ParseFunction(string expression)
+        static IFunction ParseFunction(string expression, ICollection<Variable> variables)
         {
             //поменять порядок действий (выражение exp1/exp1 распознается как exp(1/exp1))
             if (Check.IsExpressionPow(expression))
-                return ParsePow(expression);
+                return ParsePow(expression, variables);
                 
             if (Check.IsExpressionFraction(expression)) 
-                return ParseFraction(expression);
+                return ParseFraction(expression, variables);
                 
             if (expression.StartsWith("sin"))                                   
-                return ParseSin(expression);
+                return ParseSin(expression, variables);
                 
             if (expression.StartsWith("cos"))
-                return ParseCos(expression);
+                return ParseCos(expression, variables);
                 
             if (expression.StartsWith("tg"))
-                return ParseTg(expression);
+                return ParseTg(expression, variables);
                 
             if (expression.StartsWith("ctg"))
-                return ParseCtg(expression);
+                return ParseCtg(expression, variables);
                 
             if (expression.StartsWith("exp"))
-                return ParseExp(expression);
+                return ParseExp(expression, variables);
                 
             if (Check.IsExpressionInBrackets(expression))
-                return ParseSum(expression);
+                return ParseSum(expression, variables);
                 
             if (double.TryParse(expression, out double result))
                 return ParseNumber(result);
-                
+
+            if (variables.Any(p => p.Name == expression))
+                return ParseVariable(expression, variables);
+
             throw new Exception("Unknown function in expression: " + expression);
         }
         
@@ -136,63 +140,73 @@ namespace MathParserClasses
         {
             return new Number() { Value = value };
         }
-        
-        static IFunction ParseSin(string expression)
+
+        static IFunction ParseVariable(string expression, ICollection<Variable> variables)
+        {
+            var parameter = variables.Where(p => p.Name == expression).FirstOrDefault();
+            if (parameter != null)
+            {
+                return parameter;
+            }
+            throw new Exception("This is not a defined variable in expression: " + expression);
+        }
+
+        static IFunction ParseSin(string expression, ICollection<Variable> variables)
         {
             if(expression.StartsWith("sin"))
             {
                 string argString = expression.Substring(3);
-                Sin result = new Sin() { Argument = Parse(argString) };
+                Sin result = new Sin() { Argument = Parse(argString, variables) };
                 return result;
             }
             throw new Exception("This is not sin: " + expression);
         }
         
-        static IFunction ParseCos(string expression)
+        static IFunction ParseCos(string expression, ICollection<Variable> variables)
         {
             if (expression.StartsWith("cos"))
             {
                 string argString = expression.Substring(3);
-                Cos result = new Cos() { Argument = Parse(argString) };
+                Cos result = new Cos() { Argument = Parse(argString, variables) };
                 return result;
             }
             throw new Exception("This is not cos: " + expression);
         }
         
-        static IFunction ParseTg(string expression)
+        static IFunction ParseTg(string expression, ICollection<Variable> variables)
         {
             if (expression.StartsWith("tg"))
             {
                 string argString = expression.Substring(2);
-                Tg result = new Tg() { Argument = Parse(argString) };
+                Tg result = new Tg() { Argument = Parse(argString, variables) };
                 return result;
             }
             throw new Exception("This is not tg: " + expression);
         }
         
-        static IFunction ParseCtg(string expression)
+        static IFunction ParseCtg(string expression, ICollection<Variable> variables)
         {
             if (expression.StartsWith("ctg"))
             {
                 string argString = expression.Substring(3);
-                Ctg result = new Ctg() { Argument = Parse(argString) };
+                Ctg result = new Ctg() { Argument = Parse(argString, variables) };
                 return result;
             }
             throw new Exception("This is not ctg: " + expression);
         }
         
-        static IFunction ParseExp(string expression)
+        static IFunction ParseExp(string expression, ICollection<Variable> variables)
         {
             if (expression.StartsWith("exp"))
             {
                 string argString = expression.Substring(3);
-                Exp result = new Exp() { Argument = Parse(argString) };
+                Exp result = new Exp() { Argument = Parse(argString, variables) };
                 return result;
             }
             throw new Exception("This is not exp: " + expression);
         }
         
-        static IFunction ParsePow(string expression)
+        static IFunction ParsePow(string expression, ICollection<Variable> variables)
         {
             if (expression.Contains("^"))
             {
@@ -209,15 +223,15 @@ namespace MathParserClasses
                         if (Check.IsBracketsAreBalanced(@base) && Check.IsBracketsAreBalanced(log))
                             return new Pow() 
                             { 
-                                Base = Parse(@base),
-                                Log = Parse(log)
+                                Base = Parse(@base, variables),
+                                Log = Parse(log, variables)
                             };
                     }
                 }
             }
             throw new Exception("This is not pow: " + expression);
         }
-        static IFunction ParseFraction(string expression)
+        static IFunction ParseFraction(string expression, ICollection<Variable> variables)
         {
             if (expression.Contains("/"))
             {
@@ -236,8 +250,8 @@ namespace MathParserClasses
                         if (Check.IsBracketsAreBalanced(numerator) && Check.IsBracketsAreBalanced(denominator))
                             return new Fraction() 
                             { 
-                                Numerator = Parse(numerator), 
-                                Denominator = Parse(denominator) 
+                                Numerator = Parse(numerator, variables), 
+                                Denominator = Parse(denominator, variables) 
                             };
                     }
                 }
