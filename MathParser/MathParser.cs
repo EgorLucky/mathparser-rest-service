@@ -313,6 +313,7 @@ namespace MathParserClasses
 
                 return result;
             }
+
             public static bool IsExpressionPow(string expression)
             {
                 bool result = false;
