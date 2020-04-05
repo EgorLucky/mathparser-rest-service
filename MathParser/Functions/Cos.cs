@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MathParserClasses
+namespace MathParserClasses.Functions
 {
-    public class Number : IFunction
+    public class Cos : IFunction
     {
-        public double Value { get; set; }
+        public IFunction Argument { get; set; }
         public double ComputeValue(ICollection<Parameter> variables)
         {
-            return Value;
+            return Math.Cos(Argument.ComputeValue(variables));
         }
     }
 }

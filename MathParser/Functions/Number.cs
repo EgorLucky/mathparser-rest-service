@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MathParserClasses
+namespace MathParserClasses.Functions
 {
-    public class Exp : IFunction
+    public class Number : IFunction
     {
-        public IFunction Argument { get; set; }
+        public double Value { get; set; }
         public double ComputeValue(ICollection<Parameter> variables)
         {
-            return Math.Exp(Argument.ComputeValue(variables));
+            return Value;
         }
     }
 }

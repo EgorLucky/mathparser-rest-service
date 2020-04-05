@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MathParserClasses
+namespace MathParserClasses.Functions
 {
-    public class Ctg : IFunction
+    public class Sin : IFunction
     {
         public IFunction Argument { get; set; }
         public double ComputeValue(ICollection<Parameter> variables)
         {
-            return 1.0 / Math.Tan(Argument.ComputeValue(variables));
+            return Math.Sin(Argument.ComputeValue(variables));
         }
     }
 }

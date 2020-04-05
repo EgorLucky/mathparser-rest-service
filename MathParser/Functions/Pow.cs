@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MathParserClasses
+namespace MathParserClasses.Functions
 {
     public class Pow : IFunction
     {

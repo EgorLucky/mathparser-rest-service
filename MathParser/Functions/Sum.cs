@@ -5,10 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MathParserClasses
+namespace MathParserClasses.Functions
 {
-    
-
     public class Sum : IFunction
     {
         public Sum()
@@ -21,16 +19,4 @@ namespace MathParserClasses
             return Terms.Sum(p => p.ComputeValue(variables));
         }
     }
-
-    
-
-    
-   
-    
-    
-    
-    
-    
-
-    
 }

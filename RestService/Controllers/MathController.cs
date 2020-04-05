@@ -11,6 +11,13 @@ namespace RestService.Controllers
     [ApiController]
     public class MathController : ControllerBase
     {
+
+        private readonly MathParserClasses.MathParser _mathParser;
+
+        public MathController(MathParserClasses.MathParser mathParser)
+        {
+            _mathParser = mathParser;
+        }
         // GET api/values
         [HttpPost("computeExpression")]
         public ActionResult ComputeExpression([FromBody] ComputeExpressionRequestModel request)
@@ -18,10 +25,12 @@ namespace RestService.Controllers
             try
             {
                 var variables = request.Parameters.Select(p => p.Variable).ToList();
-                var result = MathParserClasses.MathParser.Parse(request.Expression, variables).ComputeValue(request.Parameters);
+                var parsedFunction = _mathParser.Parse(request.Expression, variables);
+                var result = parsedFunction.ComputeValue(request.Parameters);
 
                 return Ok(new { 
-                    result
+                    result,
+                    parsedFunction
                 });
             }
             catch(Exception e)
