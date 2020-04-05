@@ -1,6 +1,8 @@
 ﻿<meta charset="utf8">
-<textarea id="parametersJson"></textarea>
-<textarea id = "expressionInputElement"></textarea>
+<div id="parameters"></div>
+<button onclick="addParameter()">Добавить параметр</button>
+<br>
+<textarea id = "expressionInputElement" style="width:100%; height:20%"></textarea>
 <button  onclick = "computeButtonClicked()">Посчитать</button>
 
 <p id = "resultTextElement"></p>
@@ -9,7 +11,30 @@
     function computeButtonClicked()
     {
         var textarea = document.getElementById("expressionInputElement");
-        var parameterTextArea = document.getElementById("parametersJson");
+
+        var parametersDiv = document.getElementById("parameters");
+        var parameters = [];
+
+        for (i = 0; i < parametersDiv.children.length; i++) {
+            var child = parametersDiv.children[i];
+            if (child.className != "parameter")
+                continue;
+            var variableName = "";
+            var value = 0;
+            for (j = 0; j < child.children.length; j++) {
+                var subChild = child.children[j];
+                if (subChild.className == "parameterNameInput")
+                    variableName = subChild.value;
+                else if(subChild.className == "parameterValueInput")
+                    value = Number(subChild.value);
+            }
+
+            parameters.push({
+                variableName: variableName,
+                value: value
+            });
+        }
+
         requestfinished = function()
         {
             var resultTextElement = document.getElementById("resultTextElement");
@@ -24,7 +49,7 @@
             }
         };
 
-        sendRequestToComputeExpression(textarea.value, JSON.parse(parameterTextArea.value), requestfinished);
+        sendRequestToComputeExpression(textarea.value, parameters, requestfinished);
     }
 
     function sendRequestToComputeExpression(expression, parameters,  requestFinishedDelegate)
@@ -41,4 +66,38 @@
         xhr.setRequestHeader("content-type", "application/json");
         xhr.send(payloadString);
     }
+
+    function addParameter()
+    {
+        var parametersDiv = document.getElementById("parameters");
+
+        var parameterDiv = document.createElement("div");
+
+        parameterDiv.className = "parameter";
+
+        var span1 = document.createElement("span");
+        span1.innerText = "Имя параметра:";
+        parameterDiv.appendChild(span1);
+
+        var nameInput = document.createElement("input");
+        nameInput.type = "text";
+        nameInput.className = "parameterNameInput";
+        parameterDiv.appendChild(nameInput);
+
+        parameterDiv.appendChild(document.createElement("br"));
+
+        var span2 = document.createElement("span");
+        span2.innerText = "Значение:";
+        parameterDiv.appendChild(span2);
+
+        var valueInput = document.createElement("input");
+        valueInput.type = "text";
+        valueInput.className = "parameterValueInput";
+        parameterDiv.appendChild(valueInput);
+
+        parametersDiv.appendChild(parameterDiv);
+    }
+
+
+
 </script>
