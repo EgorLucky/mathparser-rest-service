@@ -30,7 +30,7 @@ namespace RestService
             var config = new PseudoConfig();
             Configuration.GetSection("config").Bind(config);
             services.AddSingleton(config);
-            services.AddHttpClient<VkHttpClient>();
+            //services.AddHttpClient<VkHttpClient>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
