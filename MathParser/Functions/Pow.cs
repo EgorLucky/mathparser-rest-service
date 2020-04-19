@@ -13,7 +13,10 @@ namespace MathParserClasses.Functions
         public IFunction Base { get; set; }
         public double ComputeValue(ICollection<Parameter> variables)
         {
-            return Math.Pow(Base.ComputeValue(variables), Log.ComputeValue(variables));
+            var @base = Base.ComputeValue(variables);
+            var log = Log.ComputeValue(variables);
+
+            return Math.Pow(@base, log);
         }
     }
 }

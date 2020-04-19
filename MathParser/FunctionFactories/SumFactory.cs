@@ -34,7 +34,7 @@ namespace MathParser.FunctionFactories
                     balance--;
                 if (ch == ')')
                     balance++;
-                if (ch == '+' && balance == 0)
+                if (ch == '+' && balance == 0 && counter != 1)
                 {
                     result.Terms.Add(_productFactory.Create(term, variables));
                     term = "";
