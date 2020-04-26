@@ -1,0 +1,125 @@
+﻿<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+<textarea id="expressionInputElement"></textarea>
+<br>
+Область определений<br> 
+от <input type="text" id="xMinTextBox" value="0">
+<br>
+до <input type="text" id="xMaxTextBox" value="5">
+<br>
+с шагом <input type="text" id="xStepTextBox" value="1">
+<br>
+<button onclick="draw()">Нарисовать</button>
+<br>
+<canvas id="myChart" width="400" height="400"></canvas>
+<script>
+    function draw()
+    {
+        let ctx = document.getElementById("myChart");
+
+        let labels = getLabels();
+
+        let data = {
+            //args
+            labels: labels,
+            datasets: [
+            //{
+            //    label: "f(x) = x",
+            //    function: function (x) { return x },
+            //    borderColor: "rgba(75, 192, 192, 1)",
+            //    data: [],
+            //    fill: false
+            //},
+            //{
+            //    label: "f(x) = x²",
+            //    function: function (x) { return x * x },
+            //    borderColor: "rgba(153, 102, 255, 1)",
+            //    data: [],
+            //    fill: false
+            //},
+            {
+                label: "mathFunction",
+                function: mathFunction,
+                borderColor: "rgba(255, 206, 86, 1)",
+                data: [],
+                fill: false
+            }]
+        };
+
+        Chart.pluginService.register({
+            beforeInit: function (chart) {
+                let data = chart.config.data;
+                for (i = 0; i < data.datasets.length; i++) {
+                    for (j = 0; j < data.labels.length; j++) {
+                        let fct = data.datasets[i].function,
+                            x = data.labels[j],
+                            y = fct(x);
+                        data.datasets[i].data.push(y);
+                    }
+                }
+            }
+        });
+
+        let myBarChart = new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: false
+                        }
+                    }]
+                }
+            }
+        });
+        
+    }
+
+
+    function mathFunction(x) {
+        let textarea = document.getElementById("expressionInputElement");
+        let expression = textarea.value;
+        let xhr = new XMLHttpRequest();
+        xhr.open('post', 'api/math/computeExpression', false);
+
+        let payload = {
+            expression: expression,
+            parameters:
+                [
+                    {
+                        variableName: 'x',
+                        value: x
+                    }
+                ]
+        };
+
+        payloadString = JSON.stringify(payload);
+        xhr.setRequestHeader("content-type", "application/json");
+        xhr.send(payloadString);
+
+        return JSON.parse(xhr.responseText).result;
+    }
+
+    function getLabels() {
+
+        let xMinTextBox = document.getElementById("xMinTextBox");
+        let xMaxTextBox = document.getElementById("xMaxTextBox");
+        let xStepTextBox = document.getElementById("xStepTextBox");
+
+        if (!(Number(xMinTextBox.value) &&
+            Number(xMaxTextBox.value) &&
+            Number(xStepTextBox.value)))
+            return [0, 1, 2, 3, 4, 5];
+
+        xMin = Number(xMinTextBox.value);
+        xMax = Number(xMaxTextBox.value);
+        xStep = Number(xStepTextBox.value);
+        result = [];
+        for (xMin; xMin < xMax; xMin += xStep)
+            result.push(xMin);
+        result.push(xMax);
+
+        return result;
+    }
+
+</script>
