@@ -1,4 +1,5 @@
-﻿<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+﻿<link rel="stylesheet" href="css/loader.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
 <textarea id="expressionInputElement">X^2</textarea>
 <br>
 Область определений<br> 
@@ -8,17 +9,23 @@
 <br>
 с шагом <input type="text" id="xStepTextBox" value="1">
 <br>
-<button onclick="draw()">Нарисовать</button>
+<button id="drawButton" onclick="draw()">Нарисовать</button>
 <br>
 <canvas id="myChart" width="400" height="400"></canvas>
 <script>
     async function draw()
     {
+        let button = document.getElementById("drawButton");
+        button.disabled = true;
+
         let ctx = document.getElementById("myChart");
 
         let labels = getLabels();
 
+        button.innerHTML = '<div class="loader"></div>';
+
         let points = await getPoints(labels);
+        button.innerHTML = 'Нарисовать';
 
         let data = {
             //args
@@ -80,9 +87,8 @@
                 }
             }
         });
-        
+        button.disabled = false;
     }
-
 
     async function mathFunction(x) {
         let textarea = document.getElementById("expressionInputElement");
