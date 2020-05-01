@@ -1,10 +1,10 @@
 ﻿<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
-<textarea id="expressionInputElement"></textarea>
+<textarea id="expressionInputElement">X^2</textarea>
 <br>
 Область определений<br> 
-от <input type="text" id="xMinTextBox" value="0">
+от <input type="text" id="xMinTextBox" value="-15">
 <br>
-до <input type="text" id="xMaxTextBox" value="5">
+до <input type="text" id="xMaxTextBox" value="15">
 <br>
 с шагом <input type="text" id="xStepTextBox" value="1">
 <br>
@@ -12,11 +12,13 @@
 <br>
 <canvas id="myChart" width="400" height="400"></canvas>
 <script>
-    function draw()
+    async function draw()
     {
         let ctx = document.getElementById("myChart");
 
         let labels = getLabels();
+
+        let points = await getPoints(labels);
 
         let data = {
             //args
@@ -37,8 +39,9 @@
             //    fill: false
             //},
             {
-                label: "mathFunction",
-                function: mathFunction,
+                    label: "mathFunction",
+                    function: x => points.filter(p => p.x == x)
+                                        .map(p => p.y),
                 borderColor: "rgba(255, 206, 86, 1)",
                 data: [],
                 fill: false
@@ -52,8 +55,8 @@
                     for (j = 0; j < data.labels.length; j++) {
                         let fct = data.datasets[i].function,
                             x = data.labels[j],
-                            y = fct(x);
-                        data.datasets[i].data.push(y);
+                            functionValues = fct(x);
+                        functionValues.map(y => data.datasets[i].data.push(y));
                     }
                 }
             }
@@ -68,6 +71,11 @@
                         ticks: {
                             beginAtZero: false
                         }
+                    }],
+                    xAxes: [{
+                        ticks: {
+                            beginAtZero: false
+                        }
                     }]
                 }
             }
@@ -76,13 +84,10 @@
     }
 
 
-    function mathFunction(x) {
+    async function mathFunction(x) {
         let textarea = document.getElementById("expressionInputElement");
         let expression = textarea.value;
-        let xhr = new XMLHttpRequest();
-        xhr.open('post', 'api/math/computeExpression', false);
-
-        let payload = {
+        let payloadObject = {
             expression: expression,
             parameters:
                 [
@@ -92,12 +97,18 @@
                     }
                 ]
         };
+        let response = await fetch('api/math/computeExpression',
+        {
+            method: "post",
+            headers: {
+                "content-type": "application/json"
+            },
+            body: JSON.stringify(payloadObject)
+        });
 
-        payloadString = JSON.stringify(payload);
-        xhr.setRequestHeader("content-type", "application/json");
-        xhr.send(payloadString);
+        let jsonResponse = await response.json();
 
-        return JSON.parse(xhr.responseText).result;
+        return jsonResponse.result;
     }
 
     function getLabels() {
@@ -106,9 +117,9 @@
         let xMaxTextBox = document.getElementById("xMaxTextBox");
         let xStepTextBox = document.getElementById("xStepTextBox");
 
-        if (!(Number(xMinTextBox.value) &&
-            Number(xMaxTextBox.value) &&
-            Number(xStepTextBox.value)))
+        if (!(Number(xMinTextBox.value) != NaN &&
+            Number(xMaxTextBox.value) != NaN &&
+            Number(xStepTextBox.value) != NaN))
             return [0, 1, 2, 3, 4, 5];
 
         xMin = Number(xMinTextBox.value);
@@ -120,6 +131,21 @@
         result.push(xMax);
 
         return result;
+    }
+
+    async function getPoints(labels) {
+        let results = [];
+        for (i = 0; i < labels.length; i++) {
+            let label = labels[i];
+            let result = await mathFunction(label);
+            results.push(
+            {
+                x: label,
+                y: result
+            });
+        }
+
+        return results;
     }
 
 </script>
