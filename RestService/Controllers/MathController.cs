@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MathParser;
 using Microsoft.AspNetCore.Mvc;
 using RestService.Models;
 
@@ -18,7 +19,8 @@ namespace RestService.Controllers
         {
             _mathParser = mathParser;
         }
-        // GET api/values
+
+
         [HttpPost("computeExpression")]
         public ActionResult ComputeExpression([FromBody] ComputeExpressionRequestModel request)
         {
@@ -38,6 +40,56 @@ namespace RestService.Controllers
                 return StatusCode(500, new { message = e.Message});
             }
         }
+
+        [HttpPost("computeFunctionValues")]
+        public ActionResult ComputeFunctionValues([FromBody] ComputeFunctionRequestModel request)
+        {
+            try
+            {
+                //validate
+                var functionDimensionCount = request.ParametersTable.FirstOrDefault()?.Count;
+                if (functionDimensionCount == null)
+                    return BadRequest();
+
+                if (request.ParametersTable.Any(p => p.Count != functionDimensionCount))
+                    return BadRequest();
+                //get variables
+
+                var variables = request.ParametersTable
+                                        .SelectMany(p => p)
+                                        .Select(p => p.Variable)
+                                        .Distinct(new VariableEqualityComparer())
+                                        .ToList();
+
+                if (variables.Count != functionDimensionCount)
+                    return BadRequest();
+
+                //parse
+                var parsedFunction = _mathParser.Parse(request.Expression, variables);
+
+                //compute
+                var result = request.ParametersTable
+                                    .Select(parameters => new
+                                    {
+                                        value = parsedFunction.ComputeValue(parameters),
+                                        parameters
+                                    })
+                                    .ToList();
+
+                return Ok(new
+                {
+                    result,
+                    parsedFunction
+                });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new { message = e.Message });
+            }
+        }
+
+
+
 
         [HttpGet("test")]
         public ActionResult Test([FromServices] PseudoConfig request)
