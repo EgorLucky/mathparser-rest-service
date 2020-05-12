@@ -13,4 +13,4 @@ steps:
     docker build -t registry.heroku.com/mathparser/web .
     docker push registry.heroku.com/mathparser/web
   env:
-    SENTRY_DSN: '$(SENTRY_DSN)'
+    SENTRY_DSN: $(SENTRY_DSN)
