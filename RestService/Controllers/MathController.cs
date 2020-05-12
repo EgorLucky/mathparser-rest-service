@@ -24,68 +24,53 @@ namespace RestService.Controllers
         [HttpPost("computeExpression")]
         public ActionResult ComputeExpression([FromBody] ComputeExpressionRequestModel request)
         {
-            try
-            {
-                var variables = request.Parameters.Select(p => p.Variable).ToList();
-                var parsedFunction = _mathParser.Parse(request.Expression, variables);
-                var result = parsedFunction.ComputeValue(request.Parameters);
+            var variables = request.Parameters.Select(p => p.Variable).ToList();
+            var parsedFunction = _mathParser.Parse(request.Expression, variables);
+            var result = parsedFunction.ComputeValue(request.Parameters);
 
-                return Ok(new { 
-                    result,
-                    parsedFunction
-                });
-            }
-            catch(Exception e)
-            {
-                return StatusCode(500, new { message = e.Message});
-            }
+            return Ok(new { 
+                result,
+                parsedFunction
+            });
         }
 
         [HttpPost("computeFunctionValues")]
         public ActionResult ComputeFunctionValues([FromBody] ComputeFunctionRequestModel request)
         {
-            try
-            {
-                //validate
-                var functionDimensionCount = request.ParametersTable.FirstOrDefault()?.Count;
-                if (functionDimensionCount == null)
-                    return BadRequest();
+            //validate
+            var functionDimensionCount = request.ParametersTable.FirstOrDefault()?.Count;
+            if (functionDimensionCount == null)
+                return BadRequest();
 
-                if (request.ParametersTable.Any(p => p.Count != functionDimensionCount))
-                    return BadRequest();
-                //get variables
-
-                var variables = request.ParametersTable
-                                        .SelectMany(p => p)
-                                        .Select(p => p.Variable)
-                                        .Distinct(new VariableEqualityComparer())
-                                        .ToList();
-
-                if (variables.Count != functionDimensionCount)
-                    return BadRequest();
-
-                //parse
-                var parsedFunction = _mathParser.Parse(request.Expression, variables);
-
-                //compute
-                var result = request.ParametersTable
-                                    .Select(parameters => new
-                                    {
-                                        value = parsedFunction.ComputeValue(parameters),
-                                        parameters
-                                    })
+            if (request.ParametersTable.Any(p => p.Count != functionDimensionCount))
+                return BadRequest();
+            //get variables
+            var variables = request.ParametersTable
+                                    .SelectMany(p => p)
+                                    .Select(p => p.Variable)
+                                    .Distinct(new VariableEqualityComparer())
                                     .ToList();
 
-                return Ok(new
-                {
-                    result,
-                    parsedFunction
-                });
-            }
-            catch (Exception e)
+            if (variables.Count != functionDimensionCount)
+                return BadRequest();
+
+            //parse
+            var parsedFunction = _mathParser.Parse(request.Expression, variables);
+
+            //compute
+            var result = request.ParametersTable
+                                .Select(parameters => new
+                                {
+                                    value = parsedFunction.ComputeValue(parameters),
+                                    parameters
+                                })
+                                .ToList();
+
+            return Ok(new
             {
-                return StatusCode(500, new { message = e.Message });
-            }
+                result,
+                parsedFunction
+            });
         }
 
 
