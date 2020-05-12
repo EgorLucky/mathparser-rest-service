@@ -3,6 +3,9 @@ variables:
   imageName: mathparser  # Replace with the name of the image you want to publish
 
 steps:
+- bash: |
+  env:
+    SENTRY_DSN: $(sentrydsn)
 - script: |
     docker build -t $(dockerId)/$(imageName) .
     docker login -u $(dockerId) -p $(dockerPassword)
@@ -12,5 +15,4 @@ steps:
 
     docker build -t registry.heroku.com/mathparser/web .
     docker push registry.heroku.com/mathparser/web
-  env:
-    SENTRY_DSN: $(sentrydsn)
+  
