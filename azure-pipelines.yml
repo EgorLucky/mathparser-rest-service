@@ -1,6 +1,7 @@
 variables:
   dockerId: egorlukvinsky96  # Replace with your Docker ID for Docker Hub or the admin user name for the Azure Container Registry
   imageName: mathparser  # Replace with the name of the image you want to publish
+  SENTRY_DSN: $(SENTRY_DSN)
 
 steps:
 - script: |
