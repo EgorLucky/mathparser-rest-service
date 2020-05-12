@@ -2,8 +2,11 @@ variables:
   dockerId: egorlukvinsky96  # Replace with your Docker ID for Docker Hub or the admin user name for the Azure Container Registry
   imageName: mathparser  # Replace with the name of the image you want to publish
   SENTRY_DSN: $(SENTRY_DSN)
-
 steps:
+- task: MSBuild@1
+  inputs:
+    solution: mathParser.sln
+    SENTRY_DSN: $(SENTRY_DSN) # Use the variable
 - script: |
     docker build -t $(dockerId)/$(imageName) .
     docker login -u $(dockerId) -p $(dockerPassword)
@@ -13,3 +16,4 @@ steps:
 
     docker build -t registry.heroku.com/mathparser/web .
     docker push registry.heroku.com/mathparser/web
+
