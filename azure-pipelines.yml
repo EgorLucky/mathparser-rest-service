@@ -4,6 +4,9 @@ variables:
 
 steps:
 - bash: |
+    SENTRY_DSN='$(sentrydsn)'
+    export SENTRY_DSN
+    printenv SENTRY_DSN
   env:
     SENTRY_DSN: $(sentrydsn)
 - script: |
