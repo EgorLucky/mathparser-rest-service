@@ -3,12 +3,6 @@ variables:
   imageName: mathparser  # Replace with the name of the image you want to publish
 
 steps:
-- bash: |
-    SENTRY_DSN='$(sentrydsn)'
-    export SENTRY_DSN
-    printenv SENTRY_DSN
-  env:
-    SENTRY_DSN: $(sentrydsn)
 - script: |
     docker build -t $(dockerId)/$(imageName) .
     docker login -u $(dockerId) -p $(dockerPassword)
