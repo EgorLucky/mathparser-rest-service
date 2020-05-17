@@ -18,4 +18,4 @@ FROM microsoft/dotnet:2.2-aspnetcore-runtime AS runtime
 WORKDIR /app
 COPY --from=build /app/RestService/out ./
 
-CMD SENTRY_DSN=$SENTRY_DSN ASPNETCORE_URLS=http://*:$PORT dotnet RestService.dll
+CMD ASPNETCORE_URLS=http://*:$PORT dotnet RestService.dll
