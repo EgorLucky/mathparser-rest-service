@@ -20,11 +20,15 @@ namespace RestService.Controllers
             _mathParser = mathParser;
         }
 
-
+        /// <summary>
+        /// Вычисляет значение функции с N аргументами в заданной точке
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost("computeExpression")]
         public ActionResult ComputeExpression([FromBody] ComputeExpressionRequestModel request)
         {
-            var variables = request.Parameters.Select(p => p.Variable).ToList();
+            var variables = request.Parameters.Select(p => p.GetVariable()).ToList();
             var parsedFunction = _mathParser.Parse(request.Expression, variables);
             var result = parsedFunction.ComputeValue(request.Parameters);
 
@@ -33,7 +37,11 @@ namespace RestService.Controllers
                 parsedFunction
             });
         }
-
+        /// <summary>
+        /// Вычисляет значения функции с N аргументами в заданных точках
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost("computeFunctionValues")]
         public ActionResult ComputeFunctionValues([FromBody] ComputeFunctionRequestModel request)
         {
@@ -47,7 +55,7 @@ namespace RestService.Controllers
             //get variables
             var variables = request.ParametersTable
                                     .SelectMany(p => p)
-                                    .Select(p => p.Variable)
+                                    .Select(p => p.GetVariable())
                                     .Distinct(new VariableEqualityComparer())
                                     .ToList();
 

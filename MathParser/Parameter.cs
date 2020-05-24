@@ -6,11 +6,9 @@
 
         public double Value { get; set; }
 
-        public Variable Variable { 
-            get
-            {
-                return new Variable { Name = VariableName };
-            } 
+        public Variable GetVariable()
+        { 
+            return new Variable { Name = VariableName };
         }
     }
 }
