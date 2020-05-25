@@ -25,7 +25,7 @@ namespace MathParser.FunctionFactories
                 Tg result = new Tg() { Argument = _mathParser.Parse(argString, variables) };
                 return result;
             }
-            throw new Exception("This is not tg: " + expression);
+            throw new UnknownFunctionException("This is not tg: " + expression);
         }
     }
 }

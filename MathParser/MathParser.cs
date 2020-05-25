@@ -19,7 +19,6 @@ namespace MathParserClasses
         {
             _functionFactories = new List<IFunctionFactory>();
 
-            //поменять порядок действий (выражение exp1/exp1 распознается как exp(1/exp1))
             _functionFactories.Add(new PowFactory(this));
             _functionFactories.Add(new FractionFactory(this));
             _functionFactories.Add(new SinFactory(this));
@@ -42,7 +41,7 @@ namespace MathParserClasses
                 mathExpression = mathExpression.Replace("-", "+-1*");
                                             
             if (!Check.IsBracketsAreBalanced(mathExpression)) 
-                throw new Exception("brackets are not balanced");
+                throw new MathParserFormatException("brackets are not balanced");
                 
             mathExpression = mathExpression.ToLower();
             
@@ -57,7 +56,7 @@ namespace MathParserClasses
             return this;
         }
         
-        public IFunction ParseFunction(string expression, ICollection<Variable> variables)
+        internal IFunction ParseFunction(string expression, ICollection<Variable> variables)
         {
             foreach(var factory in _functionFactories)
                 if (factory.Check(expression))
@@ -66,7 +65,7 @@ namespace MathParserClasses
             if (variables.Any(p => p.Name == expression))
                 return ParseVariable(expression, variables);
 
-            throw new Exception("Unknown function in expression: " + expression);
+            throw new UnknownFunctionException("Unknown function in expression: " + expression);
         }
 
         IFunction ParseVariable(string expression, ICollection<Variable> variables)
@@ -76,7 +75,7 @@ namespace MathParserClasses
             {
                 return parameter;
             }
-            throw new Exception("This is not a defined variable in expression: " + expression);
+            throw new UnknownVariableException("This is not a defined variable in expression: " + expression);
         }
     }
 }

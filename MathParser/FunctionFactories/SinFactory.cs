@@ -25,7 +25,7 @@ namespace MathParser.FunctionFactories
                 Sin result = new Sin() { Argument = _mathParser.Parse(argString, variables) };
                 return result;
             }
-            throw new Exception("This is not sin: " + expression);
+            throw new UnknownFunctionException("This is not sin: " + expression);
         }
     }
 }

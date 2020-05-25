@@ -60,7 +60,7 @@ namespace MathParser.FunctionFactories
                     }
                 }
             }
-            throw new Exception("This is not pow: " + expression);
+            throw new UnknownFunctionException("This is not pow: " + expression);
         }
     }
 }

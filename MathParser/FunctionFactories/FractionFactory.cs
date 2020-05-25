@@ -63,7 +63,7 @@ namespace MathParser.FunctionFactories
                     }
                 }
             }
-            throw new Exception("This is not fraction: " + expression);
+            throw new UnknownFunctionException("This is not fraction: " + expression);
         }
     }
 }

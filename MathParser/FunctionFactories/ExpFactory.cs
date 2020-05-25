@@ -25,7 +25,7 @@ namespace MathParser.FunctionFactories
                 Exp result = new Exp() { Argument = _mathParser.Parse(argString, variables) };
                 return result;
             }
-            throw new Exception("This is not exp: " + expression);
+            throw new UnknownFunctionException("This is not exp: " + expression);
         }
 
 

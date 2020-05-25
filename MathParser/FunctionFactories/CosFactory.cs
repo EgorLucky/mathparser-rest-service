@@ -26,7 +26,7 @@ namespace MathParser.FunctionFactories
                 Cos result = new Cos() { Argument = _mathParser.Parse(argString, variables) };
                 return result;
             }
-            throw new Exception("This is not cos: " + expression);
+            throw new UnknownFunctionException("This is not cos: " + expression);
         }
     }
 }

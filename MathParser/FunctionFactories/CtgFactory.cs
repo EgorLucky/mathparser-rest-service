@@ -26,7 +26,7 @@ namespace MathParser.FunctionFactories
                 Ctg result = new Ctg() { Argument = _mathParser.Parse(argString, variables) };
                 return result;
             }
-            throw new Exception("This is not ctg: " + expression);
+            throw new UnknownFunctionException("This is not ctg: " + expression);
         }
     }
 }
