@@ -9,6 +9,7 @@ namespace MathParserClasses.Functions
 {
     class Fraction: IFunction
     {
+        public string Name => nameof(Fraction);
         public IFunction Numerator { get; set; }
         public IFunction Denominator { get; set; }
         public double ComputeValue(ICollection<Parameter> variables)

@@ -9,6 +9,7 @@ namespace MathParserClasses.Functions
 {
     public class Exp : IFunction
     {
+        public string Name => nameof(Exp);
         public IFunction Argument { get; set; }
         public double ComputeValue(ICollection<Parameter> variables)
         {

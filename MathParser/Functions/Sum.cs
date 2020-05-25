@@ -9,6 +9,7 @@ namespace MathParserClasses.Functions
 {
     public class Sum : IFunction
     {
+        public string Name => nameof(Sum);
         public Sum()
         {
             Terms = new List<IFunction>();

@@ -8,6 +8,7 @@ namespace MathParserClasses
 {
     public interface IFunction
     {
+        string Name { get; }
         double ComputeValue(ICollection<Parameter> variables);
     }
 }

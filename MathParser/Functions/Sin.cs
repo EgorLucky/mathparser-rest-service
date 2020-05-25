@@ -9,6 +9,7 @@ namespace MathParserClasses.Functions
 {
     public class Sin : IFunction
     {
+        public string Name => nameof(Sin);
         public IFunction Argument { get; set; }
         public double ComputeValue(ICollection<Parameter> variables)
         {

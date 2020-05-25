@@ -9,6 +9,7 @@ namespace MathParserClasses.Functions
 {
     public class Product : IFunction
     {
+        public string Name => nameof(Product);
         public Product()
         {
             Factors = new List<IFunction>();
