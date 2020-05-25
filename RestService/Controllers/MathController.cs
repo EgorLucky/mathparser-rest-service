@@ -28,14 +28,22 @@ namespace RestService.Controllers
         [HttpPost("computeExpression")]
         public ActionResult ComputeExpression([FromBody] ComputeExpressionRequestModel request)
         {
-            var variables = request.Parameters.Select(p => p.GetVariable()).ToList();
-            var parsedFunction = _mathParser.Parse(request.Expression, variables);
-            var result = parsedFunction.ComputeValue(request.Parameters);
+            try 
+            { 
+                var variables = request.Parameters.Select(p => p.GetVariable()).ToList();
+                var parsedFunction = _mathParser.Parse(request.Expression, variables);
+                var result = parsedFunction.ComputeValue(request.Parameters);
 
-            return Ok(new { 
-                result,
-                parsedFunction
-            });
+                return Ok(new { 
+                    result,
+                    parsedFunction
+                });
+            }
+            catch(MathParserException e)
+            {
+                //
+                return StatusCode(500, new { e.Message });
+            }
         }
         /// <summary>
         /// Вычисляет значения функции с N аргументами в заданных точках
@@ -62,23 +70,31 @@ namespace RestService.Controllers
             if (variables.Count != functionDimensionCount)
                 return BadRequest();
 
-            //parse
-            var parsedFunction = _mathParser.Parse(request.Expression, variables);
-
-            //compute
-            var result = request.ParametersTable
-                                .Select(parameters => new
-                                {
-                                    value = parsedFunction.ComputeValue(parameters),
-                                    parameters
-                                })
-                                .ToList();
-
-            return Ok(new
+            try
             {
-                result,
-                parsedFunction
-            });
+                //parse
+                var parsedFunction = _mathParser.Parse(request.Expression, variables);
+
+                //compute
+                var result = request.ParametersTable
+                                    .Select(parameters => new
+                                    {
+                                        value = parsedFunction.ComputeValue(parameters),
+                                        parameters
+                                    })
+                                    .ToList();
+
+                return Ok(new
+                {
+                    result,
+                    parsedFunction
+                });
+            }
+            catch(MathParserException e)
+            {
+                //
+                return StatusCode(500, new { e.Message });
+            }
         }
 
 
