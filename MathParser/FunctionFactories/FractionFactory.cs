@@ -14,19 +14,22 @@ namespace MathParser.FunctionFactories
         {
             _mathParser = mathParser;
         }
-        public bool Check(string expression) 
+        public bool Check(string expression)
         {
-            bool result = false;
-            int i = -1;
-            foreach (var ch in expression)
+            var result = false;
+            
+            for(var i = expression.Length - 1; i >= 0; i--) 
             {
-                i++;
+                var ch = expression[i];
                 if (ch != '/')
                     continue;
                 else if (i != 0 && i != expression.Length - 1)
                 {
-                    if (MathParserClasses.Check.IsBracketsAreBalanced(expression.Substring(0, i)) && 
-                        MathParserClasses.Check.IsBracketsAreBalanced(expression.Substring(i + 1)))
+                    var numerator = expression.Substring(0, i);
+                    var denominator = expression.Substring(i + 1);
+
+                    if (MathParserClasses.Check.IsBracketsAreBalanced(numerator) &&
+                        MathParserClasses.Check.IsBracketsAreBalanced(denominator))
                     {
                         result = true;
                         return result;
@@ -41,10 +44,9 @@ namespace MathParser.FunctionFactories
         {
             if (expression.Contains("/"))
             {
-                int i = -1;
-                foreach (var ch in expression)
+                for (var i = expression.Length - 1; i >= 0; i--)
                 {
-                    i++;
+                    var ch = expression[i];
                     if (ch != '/')
                         continue;
 
