@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MathParser
 {
-    interface IConst
+    public interface IConst
     {
         string Name { get;}
 
