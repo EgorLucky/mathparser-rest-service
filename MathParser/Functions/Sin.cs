@@ -13,7 +13,9 @@ namespace MathParserClasses.Functions
         public IFunction Argument { get; set; }
         public double ComputeValue(ICollection<Parameter> variables)
         {
-            return Math.Sin(Argument.ComputeValue(variables));
+            var argumentValue = Argument.ComputeValue(variables);
+            var result = Math.Sin(argumentValue);
+            return result;
         }
     }
 }

@@ -16,5 +16,10 @@ namespace MathParser.FunctionFactories
             double.TryParse(expression.Replace("+-1", "-1"), out double result);
             return new Number() { Value = result };
         }
+
+        public IFunction Create(double value)
+        {
+            return new Number() { Value = value };
+        }
     }
 }
