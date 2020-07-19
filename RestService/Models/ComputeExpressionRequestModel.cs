@@ -1,4 +1,4 @@
-using MathParserClasses;
+using MathParser;
 using System.Collections.Generic;
 
 namespace RestService.Models

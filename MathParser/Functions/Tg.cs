@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MathParserClasses.Functions
+namespace MathParser.Functions
 {
     public class Tg : IFunction
     {

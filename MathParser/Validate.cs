@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 
-namespace MathParserClasses
+namespace MathParser
 {
-    public static class Check
+    public static class Validate
     {
         public static bool IsExpressionInBrackets(string expression)
         {

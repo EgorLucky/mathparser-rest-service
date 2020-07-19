@@ -1,4 +1,4 @@
-﻿namespace MathParserClasses
+﻿namespace MathParser
 {
     public class Parameter
     {

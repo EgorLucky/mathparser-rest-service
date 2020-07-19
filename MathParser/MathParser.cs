@@ -1,6 +1,6 @@
 ﻿using MathParser;
 using MathParser.Constants;
-using MathParser.FunctionFactories;
+using MathParser.FunctionParsers;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -9,34 +9,38 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MathParserClasses
+namespace MathParser
 {
     public class MathParser
     {
-        public readonly List<IFunctionFactory> _functionFactories;
-        public readonly List<IConst> _constants;
-        public readonly SumFactory _sumFactory;
-        public readonly NumberFactory _numberFactory;
+        private readonly List<IConst> _constants;
+        private readonly List<IMathParserEntity> _mathparserEntities;
+        private readonly NumberParser _numberFactory;
+        private readonly List<IFunctionParser> _functionParsers;
 
         public MathParser()
         {
-            _functionFactories = new List<IFunctionFactory>();
+            _functionParsers = new List<IFunctionParser>();
 
-            _functionFactories.Add(new PowFactory(this));
-            _functionFactories.Add(new FractionFactory(this));
-            _functionFactories.Add(new SinFactory(this));
-            _functionFactories.Add(new CosFactory(this));
-            _functionFactories.Add(new TgFactory(this));
-            _functionFactories.Add(new CtgFactory(this));
-            _functionFactories.Add(new ExpFactory(this));
-            _sumFactory = new SumFactory(new ProductFactory(this));
-            _functionFactories.Add(_sumFactory);
-            _numberFactory = new NumberFactory();
-            _functionFactories.Add(_numberFactory);
+            _functionParsers.Add(new PowParser(this));
+            _functionParsers.Add(new FractionParser(this));
+            _functionParsers.Add(new SinParser(this));
+            _functionParsers.Add(new CosParser(this));
+            _functionParsers.Add(new TgParser(this));
+            _functionParsers.Add(new CtgParser(this));
+            _functionParsers.Add(new ExpParser(this));
+            _functionParsers.Add(new SumParser(this));
+            _functionParsers.Add(new ProductParser(this));
+            _numberFactory = new NumberParser();
+            _functionParsers.Add(_numberFactory);
 
             _constants = new List<IConst>();
             _constants.Add(new PI());
             _constants.Add(new E());
+
+            _mathparserEntities = new List<IMathParserEntity>();
+            _mathparserEntities.AddRange(_constants);
+            _mathparserEntities.AddRange(_functionParsers);
         }
 
         /// <summary>
@@ -44,43 +48,105 @@ namespace MathParserClasses
         /// </summary>
         /// <param name="mathExpression"></param>
         /// <param name="variables"></param>
-        /// <returns></returns>
-        public IFunction Parse(string mathExpression, ICollection<Variable> variables)
+        /// <returns>MathTryParseResult</returns>
+        public MathTryParseResult TryParse(string mathExpression, ICollection<Variable> variables = null)
         {
             //форматирование строки
             Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("ru-RU");
             mathExpression = mathExpression.Replace(" ", "")
                                            .Replace('.', ',');
-            if(!mathExpression.Contains("+-1*"))
+            if (!mathExpression.Contains("+-1*"))
                 mathExpression = mathExpression.Replace("-", "+-1*");
 
-            var matchedName = variables.Where(v => _constants.Select(c => c.Name.ToString()).Contains(v.Name.ToLower()))
+            var matchedName = string.Empty;
+            
+            if(variables != null)
+                matchedName = variables.Where(v => _mathparserEntities.Exists(c => c.Name.ToString() == v.Name.ToLower()))
                                         .Select(v => v.Name)
                                         .FirstOrDefault();
 
             if (!string.IsNullOrEmpty(matchedName))
-                throw new VariableWrongNameException($"Wrong name for variable {matchedName}. There already const with the same name");
+                return new MathTryParseResult()
+                {
+                    IsSuccessfulCreated = false,
+                    ErrorMessage = $"Wrong name for variable {matchedName}. There is already entity with the same name"
+                };
 
 
             mathExpression = mathExpression.ToLower();
 
-            if (!Check.IsBracketsAreBalanced(mathExpression)) 
-                throw new MathParserFormatException("brackets are not balanced");
-                
+            if (!Validate.IsBracketsAreBalanced(mathExpression))
+                return new MathTryParseResult()
+                {
+                    IsSuccessfulCreated = false,
+                    ErrorMessage = "brackets are not balanced"
+                };
+
+            if (Validate.IsExpressionInBrackets(mathExpression))
+                mathExpression = mathExpression.Remove(mathExpression.Length - 1, 1)
+                                        .Remove(0, 1);
+
             //начало парсинга
-            var result = _sumFactory.Create(mathExpression, variables);
+
+            return TryParseFunction(mathExpression, variables);
+        }
+
+        private MathTryParseResult TryParseFunction(string expression, ICollection<Variable> variables)
+        {
+
+            var functionParsersResults  =_functionParsers
+                            .Select(f => new 
+                            { 
+                                    factory = f, 
+                                    result = f.TryParse(expression, variables) 
+                            })
+                            .Where(f => f.result.IsSuccessfulCreated)
+                            .OrderBy(f => f.factory.GetType() != typeof(SumParser))
+                            .ThenByDescending(f => f.factory.Name.Length)
+                            .ToList();
+
+            if (functionParsersResults.Count() > 0)
+            {
+                var result = functionParsersResults.Select(f => f.result).FirstOrDefault();
+                return result;
+            }
+
+            var matchedConstant = _constants
+                                    .Where(c => c.Name.ToLower() == expression)
+                                    .FirstOrDefault();
+
+            if(matchedConstant != null)
+                return new MathTryParseResult
+                {
+                    IsSuccessfulCreated = true,
+                    Function = _numberFactory.Create(matchedConstant.Value)
+                };
+
+            if (variables.Any(p => p.Name.ToLower() == expression))
+                return new MathTryParseResult
+                {
+                    IsSuccessfulCreated = true,
+                    Function = ParseVariable(expression, variables)
+                };
             
-            return result;
+            return new MathTryParseResult
+            {
+                IsSuccessfulCreated = false,
+                ErrorMessage = "Unknown function in expression: " + expression
+            };
         }
 
         /// <summary>
-        /// Добавление фабрики сторонней реализации IFunction 
+        /// Добавление парсера сторонней реализации IFunction 
         /// </summary>
-        /// <param name="factory"></param>
+        /// <param name="parser"></param>
         /// <returns></returns>
-        public MathParser AddFunctionFactory(IFunctionFactory factory)
+        public MathParser AddFunctionParser(IFunctionParser parser)
         {
-            _functionFactories.Add(factory);
+            if (_mathparserEntities.Exists(e => e.Name.ToLower() == parser.Name.ToLower()))
+                throw new Exception($"Wrong name for entity {parser.Name}. There is already entity with the same name");
+            _functionParsers.Add(parser);
+            _mathparserEntities.Add(parser);
             return this;
         }
 
@@ -91,40 +157,19 @@ namespace MathParserClasses
         /// <returns></returns>
         public MathParser AddConst(IConst constant)
         {
+            if (_mathparserEntities.Exists(e => e.Name.ToLower() == constant.Name.ToLower()))
+                throw new Exception($"Wrong name for entity {constant.Name}. There is already entity with the same name");
             _constants.Add(constant);
+            _mathparserEntities.Add(constant);
             return this;
-        }
-
-        /// <summary>
-        /// Процесс распознавания элемента в строке и его парсинг
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <param name="variables"></param>
-        /// <returns></returns>
-        internal IFunction ParseFunction(string expression, ICollection<Variable> variables)
-        {
-            foreach(var factory in _functionFactories)
-                if (factory.Check(expression))
-                    return factory.Create(expression, variables);
-
-            foreach (var constant in _constants)
-                if (constant.Name.ToLower() == expression)
-                    return _numberFactory.Create(constant.Value);
-
-            if (variables.Any(p => p.Name.ToLower() == expression))
-                return ParseVariable(expression, variables);
-
-            throw new UnknownFunctionException("Unknown function in expression: " + expression);
         }
 
         IFunction ParseVariable(string expression, ICollection<Variable> variables)
         {
-            var parameter = variables.Where(p => p.Name.ToLower() == expression).FirstOrDefault();
-            if (parameter != null)
-            {
-                return parameter;
-            }
-            throw new UnknownVariableException("This is not a defined variable in expression: " + expression);
+            var parameter = variables
+                            .Where(p => p.Name.ToLower() == expression)
+                            .FirstOrDefault();
+            return parameter;
         }
     }
 }

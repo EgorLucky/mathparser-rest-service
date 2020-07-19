@@ -13,9 +13,9 @@ namespace RestService.Controllers
     public class MathController : ControllerBase
     {
 
-        private readonly MathParserClasses.MathParser _mathParser;
+        private readonly MathParser.MathParser _mathParser;
 
-        public MathController(MathParserClasses.MathParser mathParser)
+        public MathController(MathParser.MathParser mathParser)
         {
             _mathParser = mathParser;
         }
@@ -28,22 +28,23 @@ namespace RestService.Controllers
         [HttpPost("computeExpression")]
         public ActionResult ComputeExpression([FromBody] ComputeExpressionRequestModel request)
         {
-            try 
-            { 
-                var variables = request.Parameters.Select(p => p.GetVariable()).ToList();
-                var parsedFunction = _mathParser.Parse(request.Expression, variables);
-                var result = parsedFunction.ComputeValue(request.Parameters);
+            var variables = request.Parameters.Select(p => p.GetVariable()).ToList();
+            var parseResult = _mathParser.TryParse(request.Expression, variables);
 
-                return Ok(new { 
-                    result,
-                    parsedFunction
+            if (!parseResult.IsSuccessfulCreated)
+                return StatusCode(500, new 
+                {
+                    Message = parseResult.ErrorMessage
                 });
-            }
-            catch(MathParserException e)
-            {
-                //
-                return StatusCode(500, new { e.Message });
-            }
+
+            var parsedFunction = parseResult.Function;
+            var result = parsedFunction.ComputeValue(request.Parameters);
+
+            return Ok(new { 
+                result,
+                parsedFunction
+            });
+            
         }
         /// <summary>
         /// Вычисляет значения функции с N аргументами в заданных точках
@@ -70,49 +71,32 @@ namespace RestService.Controllers
             if (variables.Count != functionDimensionCount)
                 return BadRequest();
 
-            try
-            {
-                //parse
-                var parsedFunction = _mathParser.Parse(request.Expression, variables);
+            //parse
+            var parseResult =_mathParser.TryParse(request.Expression, variables);
 
-                //compute
-                var result = request.ParametersTable
-                                    .Select(parameters => new
-                                    {
-                                        value = parsedFunction.ComputeValue(parameters),
-                                        parameters
-                                    })
-                                    .ToList();
-
-                return Ok(new
+            if(!parseResult.IsSuccessfulCreated)
+                return StatusCode(500, new
                 {
-                    result,
-                    parsedFunction
+                    Message = parseResult.ErrorMessage
                 });
-            }
-            catch(MathParserException e)
+
+            var parsedFunction = parseResult.Function;
+
+            //compute
+            var result = request.ParametersTable
+                                .Select(parameters => new
+                                {
+                                    value = parsedFunction.ComputeValue(parameters),
+                                    parameters
+                                })
+                                .ToList();
+
+            return Ok(new
             {
-                //
-                return StatusCode(500, new { e.Message });
-            }
+                result,
+                parsedFunction
+            });
+            
         }
-
-
-
-
-        [HttpGet("test")]
-        public ActionResult Test([FromServices] PseudoConfig request)
-        {
-            try
-            {
-                return Ok(request);
-            }
-            catch (Exception e)
-            {
-                return StatusCode(500, new { message = e.Message });
-            }
-        }
-
-        
     }
 }

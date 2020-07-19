@@ -4,10 +4,8 @@ using System.Text;
 
 namespace MathParser
 {
-    public interface IConst
+    public interface IConst : IMathParserEntity
     {
-        string Name { get;}
-
         double Value { get;}
     }
 }
