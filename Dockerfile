@@ -4,12 +4,10 @@ WORKDIR /app
 # copy csproj and restore as distinct layers
 COPY *.sln .
 COPY RestService/*.csproj ./RestService/
-COPY MathParser/*.csproj ./MathParser/
 RUN dotnet restore
 
 # copy everything else and build app
 COPY RestService/. ./RestService/
-COPY MathParser/. ./MathParser/
 
 WORKDIR /app/RestService
 RUN dotnet publish -c Release -o out
