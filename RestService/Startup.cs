@@ -29,10 +29,6 @@ namespace RestService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<MathParser.MathParser>();
-            var config = new PseudoConfig();
-            Configuration.GetSection("config").Bind(config);
-            services.AddSingleton(config);
-
             services.AddSwaggerGen(c => 
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "MathParser Service API" });

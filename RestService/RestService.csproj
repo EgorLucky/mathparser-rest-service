@@ -17,11 +17,8 @@
     <PackageReference Include="Sentry.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.6.0" />
+    <PackageReference Include="EgorLucky.MathParser" Version="1.0.0" />
 
     
-  </ItemGroup>
-
-<ItemGroup>
-    <ProjectReference Include="..\MathParser\MathParser.csproj" />
   </ItemGroup>
 </Project>
