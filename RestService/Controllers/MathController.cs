@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MathParser;
+using EgorLucky.MathParser;
 using Microsoft.AspNetCore.Mvc;
 using RestService.Models;
 
@@ -13,9 +13,9 @@ namespace RestService.Controllers
     public class MathController : ControllerBase
     {
 
-        private readonly MathParser.MathParser _mathParser;
+        private readonly MathParser _mathParser;
 
-        public MathController(MathParser.MathParser mathParser)
+        public MathController(MathParser mathParser)
         {
             _mathParser = mathParser;
         }

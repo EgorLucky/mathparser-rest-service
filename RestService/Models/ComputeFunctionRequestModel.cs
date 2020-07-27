@@ -1,4 +1,4 @@
-﻿using MathParser;
+﻿using EgorLucky.MathParser;
 using System.Collections.Generic;
 
 namespace RestService.Models 
