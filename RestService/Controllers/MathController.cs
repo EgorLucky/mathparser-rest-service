@@ -37,7 +37,7 @@ namespace RestService.Controllers
                     Message = parseResult.ErrorMessage
                 });
 
-            var parsedFunction = parseResult.Function;
+            var parsedFunction = parseResult.Expression;
             var result = parsedFunction.ComputeValue(request.Parameters);
 
             return Ok(new { 
@@ -80,7 +80,7 @@ namespace RestService.Controllers
                     Message = parseResult.ErrorMessage
                 });
 
-            var parsedFunction = parseResult.Function;
+            var parsedFunction = parseResult.Expression;
 
             //compute
             var result = request.ParametersTable
