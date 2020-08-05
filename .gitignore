@@ -8,3 +8,5 @@ MathParser/.vscode/*
 .vscode/tasks.json
 .vs/
 release/
+MathParserService.DAL/bin/
+MathParserService.DAL/obj/
