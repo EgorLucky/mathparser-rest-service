@@ -10,3 +10,5 @@ MathParser/.vscode/*
 release/
 MathParserService.DAL/bin/
 MathParserService.DAL/obj/
+MathParserService.DL/bin/
+MathParserService.DL/obj/

@@ -12,13 +12,20 @@
 
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
     <PackageReference Include="Sentry.AspNetCore" Version="2.1.5" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.1" />
-    <PackageReference Include="EgorLucky.MathParser" Version="1.0.2" />
 
     
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\MathParserService.DAL\MathParserService.DAL.csproj" />
+    <ProjectReference Include="..\MathParserService.DL\MathParserService.DL.csproj" />
   </ItemGroup>
 </Project>

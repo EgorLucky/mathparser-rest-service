@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestService", "RestService\RestService.csproj", "{4D25057E-6DEE-410C-AF82-6632F4EAB81A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathParserService.DAL", "MathParserService.DAL\MathParserService.DAL.csproj", "{B2EA4C7A-126B-4509-A2DA-795EB53E8813}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MathParserService.DAL", "MathParserService.DAL\MathParserService.DAL.csproj", "{B2EA4C7A-126B-4509-A2DA-795EB53E8813}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathParserService.DL", "MathParserService.DL\MathParserService.DL.csproj", "{06D77F4E-8684-466C-8B3A-04FEA3B7E6E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{B2EA4C7A-126B-4509-A2DA-795EB53E8813}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2EA4C7A-126B-4509-A2DA-795EB53E8813}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2EA4C7A-126B-4509-A2DA-795EB53E8813}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06D77F4E-8684-466C-8B3A-04FEA3B7E6E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06D77F4E-8684-466C-8B3A-04FEA3B7E6E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06D77F4E-8684-466C-8B3A-04FEA3B7E6E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06D77F4E-8684-466C-8B3A-04FEA3B7E6E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

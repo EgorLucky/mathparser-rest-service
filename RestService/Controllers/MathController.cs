@@ -4,7 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using EgorLucky.MathParser;
 using Microsoft.AspNetCore.Mvc;
-using RestService.Models;
+using MathParserService.DL;
+using MathParserService.DL.Models;
 
 namespace RestService.Controllers
 {
@@ -12,12 +13,11 @@ namespace RestService.Controllers
     [ApiController]
     public class MathController : ControllerBase
     {
+        private readonly IMathParserService _mathParserService;
 
-        private readonly MathParser _mathParser;
-
-        public MathController(MathParser mathParser)
+        public MathController(IMathParserService mathParserService)
         {
-            _mathParser = mathParser;
+            _mathParserService = mathParserService;
         }
 
         /// <summary>
@@ -26,77 +26,50 @@ namespace RestService.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("computeExpression")]
-        public ActionResult ComputeExpression([FromBody] ComputeExpressionRequestModel request)
+        public async Task<ActionResult> ComputeExpression([FromBody] ComputeExpressionRequestModel request)
         {
-            var variables = request.Parameters.Select(p => p.GetVariable()).ToList();
-            var parseResult = _mathParser.TryParse(request.Expression, variables);
+            var result = await _mathParserService.ComputeExpression(request);
 
-            if (!parseResult.IsSuccessfulCreated)
+            if (!result.IsSuccessfulComputed)
                 return StatusCode(500, new 
                 {
-                    Message = parseResult.ErrorMessage
+                    Message = result.ErrorMessage
                 });
 
-            var parsedFunction = parseResult.Expression;
-            var result = parsedFunction.ComputeValue(request.Parameters);
-
-            return Ok(new { 
-                result,
-                parsedFunction
-            });
-            
+            return Ok(result);
         }
+
         /// <summary>
         /// Вычисляет значения функции с N аргументами в заданных точках
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("computeFunctionValues")]
-        public ActionResult ComputeFunctionValues([FromBody] ComputeFunctionRequestModel request)
+        public async Task<ActionResult> ComputeFunctionValues([FromBody] ComputeFunctionRequestModel request)
         {
-            //validate
-            var functionDimensionCount = request.ParametersTable.FirstOrDefault()?.Count;
-            if (functionDimensionCount == null)
-                return BadRequest();
+            var result = await _mathParserService.ComputeFunctionValues(request);
 
-            if (request.ParametersTable.Any(p => p.Count != functionDimensionCount))
-                return BadRequest();
-            //get variables
-            var variables = request.ParametersTable
-                                    .SelectMany(p => p)
-                                    .Select(p => p.GetVariable())
-                                    .Distinct(new VariableEqualityComparer())
-                                    .ToList();
-
-            if (variables.Count != functionDimensionCount)
-                return BadRequest();
-
-            //parse
-            var parseResult =_mathParser.TryParse(request.Expression, variables);
-
-            if(!parseResult.IsSuccessfulCreated)
+            if (!result.IsSuccessfulComputed)
                 return StatusCode(500, new
                 {
-                    Message = parseResult.ErrorMessage
+                    Message = result.ErrorMessage
                 });
 
-            var parsedFunction = parseResult.Expression;
+            return Ok(result);
 
-            //compute
-            var result = request.ParametersTable
-                                .Select(parameters => new
-                                {
-                                    value = parsedFunction.ComputeValue(parameters),
-                                    parameters
-                                })
-                                .ToList();
+        }
 
-            return Ok(new
-            {
-                result,
-                parsedFunction
-            });
-            
+        /// <summary>
+        /// Получает последние limit вычесленные функции
+        /// </summary>
+        /// <param name="limit">Максимальное число результатов</param>
+        /// <returns></returns>
+        [HttpGet("getLast")]
+        public async Task<ActionResult> GetLast([FromQuery]int limit = 20)
+        {
+            var result = await _mathParserService.GetLastAsync(limit);
+
+            return Ok(result);
         }
     }
 }

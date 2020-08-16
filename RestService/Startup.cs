@@ -4,15 +4,19 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using MathParserService.DAL;
+using MathParserService.DL;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using AutoMapper;
 
 namespace RestService
 {
@@ -28,7 +32,20 @@ namespace RestService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            //var migrationAssemblyName = typeof(MathParserContext).Assembly.GetName().Name;
+
             services.AddTransient<EgorLucky.MathParser.MathParser>();
+            services.AddDbContext<MathParserContext>(b => 
+                                        b.UseNpgsql(Environment.GetEnvironmentVariable("mathParserServiceConnectionString")//, 
+                                                //c => c.MigrationsAssembly(migrationAssemblyName)
+                                                ));
+            services.AddTransient<IMathParserService, MathParserService.DL.MathParserService>();
+            services.AddTransient<IDatabaseService, MathParserService.DL.DatabaseService>();
+            services.AddTransient<IRepository, Repository>();
+
+            services.AddAutoMapper(typeof(MappingProfile));
+
             services.AddSwaggerGen(c => 
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "MathParser Service API" });
@@ -38,7 +55,10 @@ namespace RestService
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services
+                .AddMvc()
+                .AddJsonOptions(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

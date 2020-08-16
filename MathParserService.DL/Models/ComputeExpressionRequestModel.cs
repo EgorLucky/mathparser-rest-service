@@ -1,7 +1,7 @@
 using EgorLucky.MathParser;
 using System.Collections.Generic;
 
-namespace RestService.Models
+namespace MathParserService.DL.Models
 {
     public class ComputeExpressionRequestModel
     {
