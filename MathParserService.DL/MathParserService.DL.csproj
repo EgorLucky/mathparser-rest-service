@@ -10,8 +10,4 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\MathParserService.DAL\MathParserService.DAL.csproj" />
-  </ItemGroup>
-
 </Project>

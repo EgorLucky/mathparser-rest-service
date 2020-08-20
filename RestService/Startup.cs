@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using AutoMapper;
+using MathParserService.DL.Implementions;
 
 namespace RestService
 {
@@ -32,17 +33,14 @@ namespace RestService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            //var migrationAssemblyName = typeof(MathParserContext).Assembly.GetName().Name;
-
             services.AddTransient<EgorLucky.MathParser.MathParser>();
             services.AddDbContext<MathParserContext>(b => 
-                                        b.UseNpgsql(Environment.GetEnvironmentVariable("mathParserServiceConnectionString")//, 
-                                                //c => c.MigrationsAssembly(migrationAssemblyName)
+                                        b.UseNpgsql(Environment.GetEnvironmentVariable("mathParserServiceConnectionString")
                                                 ));
-            services.AddTransient<IMathParserService, MathParserService.DL.MathParserService>();
-            services.AddTransient<IDatabaseService, MathParserService.DL.DatabaseService>();
-            services.AddTransient<IRepository, Repository>();
+            services.AddTransient<IMathParserService<Expression>, MathParserService<Expression>>();
+            services.AddTransient<IDatabaseService<Expression>, ExpressionDataBaseService>();
+            services.AddTransient<IRepository<Expression>, ExpressionRepository>();
+            services.AddTransient<IExpressionFactory<Expression>, ExpressionFactory>();
 
             services.AddAutoMapper(typeof(MappingProfile));
 

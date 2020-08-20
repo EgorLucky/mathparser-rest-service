@@ -3,7 +3,7 @@ using EgorLucky.MathParser;
 using MathParserService.DAL;
 using Newtonsoft.Json;
 
-namespace MathParserService.DL
+namespace MathParserService.DL.Implementions
 {
     public class MappingProfile : Profile
     {

@@ -1,26 +1,22 @@
-﻿using AutoMapper;
-using EgorLucky.MathParser;
-using MathParserService.DAL;
-using MathParserService.DL.Models;
-using Newtonsoft.Json;
-using System;
+﻿using EgorLucky.MathParser;
+using MathParserService.DL.ApiModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace MathParserService.DL
 {
-    public class MathParserService : IMathParserService
+    public class MathParserService<ExpressionType> : IMathParserService<ExpressionType>  where ExpressionType: IDatabaseEntity
     {
-        private readonly IMapper _mapper;
-        private readonly IDatabaseService _dataBaseService;
+        private readonly IDatabaseService<ExpressionType> _dataBaseService;
         private readonly MathParser _mathParser;
+        private readonly IExpressionFactory<ExpressionType> _expressionFactory;
 
-        public MathParserService(IMapper mapper, IDatabaseService dataBaseService, MathParser mathParser)
+        public MathParserService(IDatabaseService<ExpressionType> dataBaseService, MathParser mathParser, IExpressionFactory<ExpressionType> expressionFactory)
         {
-            _mapper = mapper;
             _dataBaseService = dataBaseService;
             _mathParser = mathParser;
+            _expressionFactory = expressionFactory;
         }
 
         public async Task<ComputeExpressionResponseModel> ComputeExpression(ComputeExpressionRequestModel request)
@@ -44,8 +40,9 @@ namespace MathParserService.DL
 
             var computeResult = parseResult.Expression.ComputeValue(request.Parameters);
 
-            //save to db
-            await SaveAsync(parseResult, variables, request.Parameters, computeResult);
+            var expressionDAL = _expressionFactory.Create(parseResult, variables, request.Parameters, computeResult);
+
+            await _dataBaseService.SaveAsync(expressionDAL);
 
             return new ComputeExpressionResponseModel
             {
@@ -117,53 +114,9 @@ namespace MathParserService.DL
             };
         }
 
-        public Task<List<Expression>> GetLastAsync(int limit)
+        public Task<List<ExpressionType>> GetLastAsync(int limit)
         {
             return _dataBaseService.GetLastAsync(limit);
-        }
-
-        async Task<Expression> SaveAsync(MathTryParseResult tryParseResult,
-                                            List<Variable> variables,
-                                            List<EgorLucky.MathParser.Parameter> parameters,
-                                            double result)
-        {
-            var expression = _mapper.Map<Expression>(tryParseResult);
-            //data access layer parameter
-            var dalParameters = _mapper.Map<List<DAL.Parameter>>(variables);
-
-            var point = new Point
-            {
-                Result = result,
-                Expression = expression
-            };
-
-            expression.Parameters = new List<DAL.Parameter>();
-            expression.Parameters.AddRange(dalParameters);
-
-            expression.Points = new List<Point>();
-            expression.Points.Add(point);
-
-            foreach (var param in parameters)
-            {
-                var parameterValue = new ParameterValue
-                {
-                    Point = point,
-                    Parameter = dalParameters
-                                    .Where(p => p.Name == param.VariableName)
-                                    .FirstOrDefault(),
-                    Value = param.Value
-                };
-
-                parameterValue.Parameter.Values = new List<ParameterValue>();
-                parameterValue.Parameter.Values.Add(parameterValue);
-
-                point.Coordinates = new List<ParameterValue>();
-                point.Coordinates.Add(parameterValue);
-            }
-
-            await _dataBaseService.SaveAsync(expression);
-
-            return expression;
         }
     }
 }

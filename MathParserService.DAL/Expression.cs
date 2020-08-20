@@ -8,7 +8,7 @@ namespace MathParserService.DAL
     /// <summary>
     /// Математическое выражение
     /// </summary>
-    public class Expression
+    public class Expression: DL.IDatabaseEntity
     {
         /// <summary>
         /// Уникальный идентификатор

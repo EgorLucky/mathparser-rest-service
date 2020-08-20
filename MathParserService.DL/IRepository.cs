@@ -1,12 +1,11 @@
-﻿using MathParserService.DAL;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace MathParserService.DL
 {
-    public interface IRepository
+    public interface IRepository<DatabaseEntity> where DatabaseEntity: IDatabaseEntity
     {
-        Task<List<Expression>> GetLastAsync(int limit);
-        Task SaveAsync(Expression expression);
+        Task<List<DatabaseEntity>> GetLastAsync(int limit);
+        Task SaveAsync(DatabaseEntity expression);
     }
 }

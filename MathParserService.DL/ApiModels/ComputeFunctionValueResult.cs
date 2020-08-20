@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MathParserService.DL.Models
+namespace MathParserService.DL.ApiModels
 {
     public class ComputeFunctionValueResult
     {

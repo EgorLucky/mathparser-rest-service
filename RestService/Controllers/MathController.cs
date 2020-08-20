@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EgorLucky.MathParser;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MathParserService.DL;
-using MathParserService.DL.Models;
+using MathParserService.DL.ApiModels;
+using MathParserService.DAL;
 
 namespace RestService.Controllers
 {
@@ -13,9 +10,9 @@ namespace RestService.Controllers
     [ApiController]
     public class MathController : ControllerBase
     {
-        private readonly IMathParserService _mathParserService;
+        private readonly IMathParserService<Expression> _mathParserService;
 
-        public MathController(IMathParserService mathParserService)
+        public MathController(IMathParserService<Expression> mathParserService)
         {
             _mathParserService = mathParserService;
         }
@@ -23,6 +20,19 @@ namespace RestService.Controllers
         /// <summary>
         /// Вычисляет значение функции с N аргументами в заданной точке
         /// </summary>
+        /// <remarks>
+        /// Образец запроса:
+        ///
+        ///     {
+        ///         "expression":"pi^x",
+        ///         "parameters":[
+        ///                 {
+        ///                     "variableName":"x",
+        ///                     "value":0
+        ///                 }
+        ///             ]
+        ///     }
+        /// </remarks>
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("computeExpression")]
@@ -42,6 +52,45 @@ namespace RestService.Controllers
         /// <summary>
         /// Вычисляет значения функции с N аргументами в заданных точках
         /// </summary>
+        /// <remarks>
+        /// Образец запроса:
+        ///
+        ///     {
+        ///         "expression":"x^2",
+        ///         "parametersTable":[
+        ///             [
+        ///                 {
+        ///                     "variableName":"x",
+        ///                     "value":0
+        ///                 }
+        ///             ],
+        ///             [
+        ///                 {
+        ///                     "variableName":"x",
+        ///                     "value":1
+        ///                 }
+        ///             ],
+        ///             [
+        ///                 {
+        ///                     "variableName":"x",
+        ///                     "value":2
+        ///                 }
+        ///             ],
+        ///             [
+        ///                 {
+        ///                     "variableName":"x",
+        ///                     "value":3
+        ///                 }
+        ///             ],
+        ///             [
+        ///                 {
+        ///                     "variableName":"x",
+        ///                     "value":4
+        ///                 }
+        ///             ]
+        ///         ]
+        ///     }
+        /// </remarks>
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("computeFunctionValues")]
@@ -60,7 +109,7 @@ namespace RestService.Controllers
         }
 
         /// <summary>
-        /// Получает последние limit вычесленные функции
+        /// Получает последние N вычесленных функций
         /// </summary>
         /// <param name="limit">Максимальное число результатов</param>
         /// <returns></returns>

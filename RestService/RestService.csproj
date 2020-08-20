@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MathParserService.DAL\MathParserService.DAL.csproj" />
+    <ProjectReference Include="..\MathParserService.DL.Implementions\MathParserService.DL.Implementions.csproj" />
     <ProjectReference Include="..\MathParserService.DL\MathParserService.DL.csproj" />
   </ItemGroup>
 </Project>

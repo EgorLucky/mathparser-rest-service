@@ -1,6 +1,6 @@
 ﻿using EgorLucky.MathParser;
 
-namespace MathParserService.DL.Models
+namespace MathParserService.DL.ApiModels
 {
     public class ComputeExpressionResponseModel
     {

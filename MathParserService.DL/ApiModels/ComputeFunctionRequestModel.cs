@@ -1,7 +1,7 @@
 ﻿using EgorLucky.MathParser;
 using System.Collections.Generic;
 
-namespace MathParserService.DL.Models 
+namespace MathParserService.DL.ApiModels
 { 
     public class ComputeFunctionRequestModel
     {
