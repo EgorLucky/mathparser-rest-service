@@ -1,13 +1,17 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using MathParserService.DAL;
 using MathParserService.DL;
 using MathParserService.DL.ApiModels;
-using MathParserService.DAL;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace RestService.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class MathController : ControllerBase
     {
         private readonly IMathParserService<Expression> _mathParserService;
@@ -41,7 +45,7 @@ namespace RestService.Controllers
             var result = await _mathParserService.ComputeExpression(request);
 
             if (!result.IsSuccessfulComputed)
-                return StatusCode(500, new 
+                return StatusCode(500, new
                 {
                     Message = result.ErrorMessage
                 });
@@ -114,7 +118,7 @@ namespace RestService.Controllers
         /// <param name="limit">Максимальное число результатов</param>
         /// <returns></returns>
         [HttpGet("getLast")]
-        public async Task<ActionResult> GetLast([FromQuery]int limit = 20)
+        public async Task<ActionResult> GetLast([FromQuery] int limit = 20)
         {
             var result = await _mathParserService.GetLastAsync(limit);
 

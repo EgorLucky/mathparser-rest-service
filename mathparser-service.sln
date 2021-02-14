@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestService", "RestService\RestService.csproj", "{4D25057E-6DEE-410C-AF82-6632F4EAB81A}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MathParserService.DAL", "MathParserService.DAL\MathParserService.DAL.csproj", "{B2EA4C7A-126B-4509-A2DA-795EB53E8813}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MathParserService.DL", "MathParserService.DL\MathParserService.DL.csproj", "{06D77F4E-8684-466C-8B3A-04FEA3B7E6E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathParserService.DL.Implementions", "MathParserService.DL.Implementions\MathParserService.DL.Implementions.csproj", "{68407B9C-78F1-4FB6-A243-1DA9BFB23D5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MathParserService.DL.Implementions", "MathParserService.DL.Implementions\MathParserService.DL.Implementions.csproj", "{68407B9C-78F1-4FB6-A243-1DA9BFB23D5D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestService", "RestService\RestService.csproj", "{F375D389-F0FF-441F-B0BF-B956E7ADA3CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4D25057E-6DEE-410C-AF82-6632F4EAB81A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4D25057E-6DEE-410C-AF82-6632F4EAB81A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4D25057E-6DEE-410C-AF82-6632F4EAB81A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4D25057E-6DEE-410C-AF82-6632F4EAB81A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B2EA4C7A-126B-4509-A2DA-795EB53E8813}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B2EA4C7A-126B-4509-A2DA-795EB53E8813}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2EA4C7A-126B-4509-A2DA-795EB53E8813}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +29,10 @@ Global
 		{68407B9C-78F1-4FB6-A243-1DA9BFB23D5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68407B9C-78F1-4FB6-A243-1DA9BFB23D5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68407B9C-78F1-4FB6-A243-1DA9BFB23D5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F375D389-F0FF-441F-B0BF-B956E7ADA3CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F375D389-F0FF-441F-B0BF-B956E7ADA3CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F375D389-F0FF-441F-B0BF-B956E7ADA3CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F375D389-F0FF-441F-B0BF-B956E7ADA3CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
