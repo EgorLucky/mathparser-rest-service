@@ -113,7 +113,7 @@ namespace RestService.Controllers
         }
 
         /// <summary>
-        /// Получает последние N вычесленных функций
+        /// Получает последние N вычисленных функций
         /// </summary>
         /// <param name="limit">Максимальное число результатов</param>
         /// <returns></returns>
