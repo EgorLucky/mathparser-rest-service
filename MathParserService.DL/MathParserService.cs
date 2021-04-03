@@ -11,12 +11,18 @@ namespace MathParserService.DL
         private readonly IDatabaseService<ExpressionType> _dataBaseService;
         private readonly MathParser _mathParser;
         private readonly IExpressionFactory<ExpressionType> _expressionFactory;
+        private readonly IExpressionToComputedExpressionMapper<ExpressionType> _computedExpressionMapper;
 
-        public MathParserService(IDatabaseService<ExpressionType> dataBaseService, MathParser mathParser, IExpressionFactory<ExpressionType> expressionFactory)
+        public MathParserService(
+            IDatabaseService<ExpressionType> dataBaseService, 
+            MathParser mathParser, 
+            IExpressionFactory<ExpressionType> expressionFactory,
+            IExpressionToComputedExpressionMapper<ExpressionType> computedExpressionMapper)
         {
             _dataBaseService = dataBaseService;
             _mathParser = mathParser;
             _expressionFactory = expressionFactory;
+            _computedExpressionMapper = computedExpressionMapper;
         }
 
         public async Task<ComputeExpressionResponseModel> ComputeExpression(ComputeExpressionRequestModel request)
@@ -114,9 +120,15 @@ namespace MathParserService.DL
             };
         }
 
-        public Task<List<ExpressionType>> GetLastAsync(int limit)
+        public async Task<List<ComputedExpression>> GetLastAsync(int limit)
         {
-            return _dataBaseService.GetLastAsync(limit);
+            var databaseObjects = await _dataBaseService.GetLastAsync(limit);
+
+            var result = databaseObjects
+                .Select(o => _computedExpressionMapper.Map(o))
+                .ToList();
+
+            return result;              
         }
     }
 }

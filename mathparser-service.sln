@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MathParserService.DL", "Mat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MathParserService.DL.Implementions", "MathParserService.DL.Implementions\MathParserService.DL.Implementions.csproj", "{68407B9C-78F1-4FB6-A243-1DA9BFB23D5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestService", "RestService\RestService.csproj", "{F375D389-F0FF-441F-B0BF-B956E7ADA3CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestService", "RestService\RestService.csproj", "{F375D389-F0FF-441F-B0BF-B956E7ADA3CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -8,6 +8,6 @@ namespace MathParserService.DL
     {
         Task<ComputeExpressionResponseModel> ComputeExpression(ComputeExpressionRequestModel request);
         Task<ComputeFunctionValuesResponseModel> ComputeFunctionValues(ComputeFunctionRequestModel request);
-        Task<List<ExpressionType>> GetLastAsync(int limit);
+        Task<List<ComputedExpression>> GetLastAsync(int limit);
     }
 }

@@ -39,6 +39,7 @@ namespace RestService
             services.AddTransient<IDatabaseService<Expression>, ExpressionDataBaseService>();
             services.AddTransient<IRepository<Expression>, ExpressionRepository>();
             services.AddTransient<IExpressionFactory<Expression>, ExpressionFactory>();
+            services.AddTransient<IExpressionToComputedExpressionMapper<Expression>, ExpressionToComputedExpressionMapper>();
 
             services.AddAutoMapper(typeof(MappingProfile));
 
