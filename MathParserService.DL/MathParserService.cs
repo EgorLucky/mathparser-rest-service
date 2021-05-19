@@ -1,5 +1,6 @@
 ﻿using EgorLucky.MathParser;
 using MathParserService.DL.ApiModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -118,6 +119,61 @@ namespace MathParserService.DL
                 Result = result,
                 Expression = parsedExpression
             };
+        }
+
+        public async Task<ComputeFunctionValuesResponseModel> Compute2DIntervalPlot(Compute2DIntervalPlotRequestModel request)
+        {
+            if(request.Max <= request.Min)
+                return new ComputeFunctionValuesResponseModel
+                {
+                    IsSuccessfulComputed = false,
+                    ErrorMessage = "Max is not bigger than Min"
+                };
+
+            if(Math.Abs(request.Max - request.Min) < request.Step)
+                return new ComputeFunctionValuesResponseModel
+                {
+                    IsSuccessfulComputed = false,
+                    ErrorMessage = "Step is bigger than interval between Max and Min"
+                };
+
+            if (request.Step <= 0)
+                return new ComputeFunctionValuesResponseModel
+                {
+                    IsSuccessfulComputed = false,
+                    ErrorMessage = "Step is not bigger than zero"
+                };
+
+            var computeFunctionRequest = new ComputeFunctionRequestModel()
+            {
+                Expression = request.Expression,
+                ParametersTable = new List<List<Parameter>>()
+            };
+
+            for (var i = request.Min; i < request.Max; i += request.Step)
+            {
+                var point = new List<Parameter>()
+                {
+                    new Parameter
+                    {
+                        VariableName = "x",
+                        Value = i
+                    }
+                };
+
+                computeFunctionRequest.ParametersTable.Add(point);
+            }
+
+            computeFunctionRequest.ParametersTable.Add(new List<Parameter>()
+            {
+                new Parameter
+                {
+                    VariableName = "x",
+                    Value = request.Max
+                }
+            });
+
+            return await ComputeFunctionValues(computeFunctionRequest);
         }
 
         public async Task<List<ComputedExpression>> GetLastAsync(int limit)

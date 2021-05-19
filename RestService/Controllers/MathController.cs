@@ -113,6 +113,33 @@ namespace RestService.Controllers
         }
 
         /// <summary>
+        /// Вычисляет значения функции от одной переменной в пределах интервала
+        /// </summary>
+        /// <remarks>
+        /// Образец запроса:
+        ///
+        ///     {
+        ///         "expression": "x^2",
+        ///         "min": -15,
+        ///         "max": 15,
+        ///         "step": 1
+        ///     }
+    /// </remarks>
+    [HttpPost("compute2DIntervalPlot")]
+        public async Task<ActionResult> Compute2DIntervalPlot([FromBody] Compute2DIntervalPlotRequestModel request)
+        {
+            var result = await _mathParserService.Compute2DIntervalPlot(request);
+
+            if (!result.IsSuccessfulComputed)
+                return StatusCode(500, new
+                {
+                    Message = result.ErrorMessage
+                });
+
+            return Ok(result);
+        }
+
+        /// <summary>
         /// Получает последние N вычисленных функций
         /// </summary>
         /// <param name="limit">Максимальное число результатов</param>
