@@ -121,24 +121,24 @@ namespace MathParserService.DL
             };
         }
 
-        public async Task<ComputeFunctionValuesResponseModel> Compute2DIntervalPlot(Compute2DIntervalPlotRequestModel request)
+        public async Task<Compute2DIntervalPlotResponseModel> Compute2DIntervalPlot(Compute2DIntervalPlotRequestModel request)
         {
             if(request.Max <= request.Min)
-                return new ComputeFunctionValuesResponseModel
+                return new Compute2DIntervalPlotResponseModel
                 {
                     IsSuccessfulComputed = false,
                     ErrorMessage = "Max is not bigger than Min"
                 };
 
             if(Math.Abs(request.Max - request.Min) < request.Step)
-                return new ComputeFunctionValuesResponseModel
+                return new Compute2DIntervalPlotResponseModel
                 {
                     IsSuccessfulComputed = false,
                     ErrorMessage = "Step is bigger than interval between Max and Min"
                 };
 
             if (request.Step <= 0)
-                return new ComputeFunctionValuesResponseModel
+                return new Compute2DIntervalPlotResponseModel
                 {
                     IsSuccessfulComputed = false,
                     ErrorMessage = "Step is not bigger than zero"
@@ -173,7 +173,30 @@ namespace MathParserService.DL
                 }
             });
 
-            return await ComputeFunctionValues(computeFunctionRequest);
+            var computeResult = await ComputeFunctionValues(computeFunctionRequest);
+
+            if (!computeResult.IsSuccessfulComputed)
+                return new Compute2DIntervalPlotResponseModel
+                {
+                    IsSuccessfulComputed = false,
+                    ErrorMessage = computeResult.ErrorMessage
+                };
+
+            var result = computeResult
+                            .Result
+                            .Select(p => new Point2D 
+                            { 
+                                X = p.Parameters.First().Value, 
+                                Y = p.Value 
+                            })
+                            .ToList();
+
+            return new Compute2DIntervalPlotResponseModel
+            {
+                IsSuccessfulComputed = true,
+                Result = result,
+                Expression = computeResult.Expression
+            };
         }
 
         public async Task<List<ComputedExpression>> GetLastAsync(int limit)

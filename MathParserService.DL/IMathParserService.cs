@@ -8,7 +8,7 @@ namespace MathParserService.DL
     {
         Task<ComputeExpressionResponseModel> ComputeExpression(ComputeExpressionRequestModel request);
         Task<ComputeFunctionValuesResponseModel> ComputeFunctionValues(ComputeFunctionRequestModel request);
-        Task<ComputeFunctionValuesResponseModel> Compute2DIntervalPlot(Compute2DIntervalPlotRequestModel request);
+        Task<Compute2DIntervalPlotResponseModel> Compute2DIntervalPlot(Compute2DIntervalPlotRequestModel request);
         Task<List<ComputedExpression>> GetLastAsync(int limit);
     }
 }
