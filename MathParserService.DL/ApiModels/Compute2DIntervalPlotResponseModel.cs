@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 
 namespace MathParserService.DL.ApiModels
 {
-    public class Compute2DIntervalPlotResponseModel
+    public record Compute2DIntervalPlotResponseModel(bool IsSuccessfulComputed)
     {
-        public bool IsSuccessfulComputed { get; set; }
         public string ErrorMessage { get; set; }
-        public List<Point2D> Result { get; internal set; }
-        public IExpression Expression { get; internal set; }
+        public List<Point2D> Result { get;  set; }
+        public IExpression Expression { get;  set; }
     }
 }

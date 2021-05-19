@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MathParserService.DL.ApiModels
 {
-    public class Compute2DIntervalPlotRequestModel
+    public record Compute2DIntervalPlotRequestModel
     {
         public string Expression { get; set; }
 

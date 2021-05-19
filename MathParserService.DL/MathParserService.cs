@@ -123,24 +123,22 @@ namespace MathParserService.DL
 
         public async Task<Compute2DIntervalPlotResponseModel> Compute2DIntervalPlot(Compute2DIntervalPlotRequestModel request)
         {
-            if(request.Max <= request.Min)
-                return new Compute2DIntervalPlotResponseModel
-                {
-                    IsSuccessfulComputed = false,
-                    ErrorMessage = "Max is not bigger than Min"
+            var result = new Compute2DIntervalPlotResponseModel(false);
+            if (request.Max <= request.Min)
+                return result with 
+                { 
+                    ErrorMessage = "Max is not bigger than Min" 
                 };
 
             if(Math.Abs(request.Max - request.Min) < request.Step)
-                return new Compute2DIntervalPlotResponseModel
+                return result with
                 {
-                    IsSuccessfulComputed = false,
                     ErrorMessage = "Step is bigger than interval between Max and Min"
                 };
 
             if (request.Step <= 0)
-                return new Compute2DIntervalPlotResponseModel
+                return result with
                 {
-                    IsSuccessfulComputed = false,
                     ErrorMessage = "Step is not bigger than zero"
                 };
 
@@ -176,13 +174,12 @@ namespace MathParserService.DL
             var computeResult = await ComputeFunctionValues(computeFunctionRequest);
 
             if (!computeResult.IsSuccessfulComputed)
-                return new Compute2DIntervalPlotResponseModel
+                return result with
                 {
-                    IsSuccessfulComputed = false,
                     ErrorMessage = computeResult.ErrorMessage
                 };
 
-            var result = computeResult
+            var mappedComputeResult = computeResult
                             .Result
                             .Select(p => new Point2D 
                             { 
@@ -191,10 +188,10 @@ namespace MathParserService.DL
                             })
                             .ToList();
 
-            return new Compute2DIntervalPlotResponseModel
+            return result with
             {
                 IsSuccessfulComputed = true,
-                Result = result,
+                Result = mappedComputeResult,
                 Expression = computeResult.Expression
             };
         }
