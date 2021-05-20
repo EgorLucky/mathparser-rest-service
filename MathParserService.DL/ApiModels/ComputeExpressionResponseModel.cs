@@ -2,10 +2,8 @@
 
 namespace MathParserService.DL.ApiModels
 {
-    public class ComputeExpressionResponseModel
+    public record ComputeExpressionResponseModel(bool IsSuccessfulComputed, string ErrorMessage = "")
     {
-        public bool IsSuccessfulComputed { get;  set; }
-        public string ErrorMessage { get;  set; }
         public double Result { get; internal set; }
         public IExpression Expression { get; internal set; }
     }

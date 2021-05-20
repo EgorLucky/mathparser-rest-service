@@ -28,32 +28,29 @@ namespace MathParserService.DL
 
         public async Task<ComputeExpressionResponseModel> ComputeExpression(ComputeExpressionRequestModel request)
         {
-            if (request.Parameters.Count > 5)
-                return new ComputeExpressionResponseModel
-                {
-                    IsSuccessfulComputed = false,
-                    ErrorMessage = "Number of parameters is bigger than 5"
-                };
+            var errorMessage = MathParserServiceParametersChecker.CheckForComputeExpression(request, 5);
+
+            if (!string.IsNullOrEmpty(errorMessage))
+                return new ComputeExpressionResponseModel(false, errorMessage);
 
             var variables = request.Parameters.Select(p => p.GetVariable()).ToList();
             var parseResult = _mathParser.TryParse(request.Expression, variables);
 
             if (parseResult.IsSuccessfulCreated == false)
-                return new ComputeExpressionResponseModel
-                {
-                    IsSuccessfulComputed = false,
-                    ErrorMessage = parseResult.ErrorMessage
-                };
+                return new ComputeExpressionResponseModel(false, parseResult.ErrorMessage);
 
             var computeResult = parseResult.Expression.ComputeValue(request.Parameters);
 
-            var expressionDAL = _expressionFactory.Create(parseResult, variables, request.Parameters, computeResult);
+            var expressionDAL = _expressionFactory
+                                    .Create(parseResult, 
+                                            variables, 
+                                            request.Parameters, 
+                                            computeResult);
 
             await _dataBaseService.SaveAsync(expressionDAL);
 
-            return new ComputeExpressionResponseModel
+            return new ComputeExpressionResponseModel(true)
             {
-                IsSuccessfulComputed = true,
                 Result = computeResult,
                 Expression = parseResult.Expression
             };
@@ -63,44 +60,24 @@ namespace MathParserService.DL
         //а данных для сохранения у этой функции больше, чем у ComputeExpression
         public async Task<ComputeFunctionValuesResponseModel> ComputeFunctionValues(ComputeFunctionRequestModel request)
         {
-            //validate
             var functionDimensionCount = request.ParametersTable.FirstOrDefault()?.Count;
-            if (functionDimensionCount == null)
-                return new ComputeFunctionValuesResponseModel
-                {
-                    IsSuccessfulComputed = false,
-                    ErrorMessage = "Couldn't count function's dimensions"
-                };
-
-            if (request.ParametersTable.Any(p => p.Count != functionDimensionCount))
-                return new ComputeFunctionValuesResponseModel
-                {
-                    IsSuccessfulComputed = false,
-                    ErrorMessage = "Not equal parameters number for each point"
-                };
-            //get variables
+            
             var variables = request.ParametersTable
                                     .SelectMany(p => p)
                                     .Select(p => p.GetVariable())
                                     .Distinct(new VariableEqualityComparer())
                                     .ToList();
 
-            if (variables.Count != functionDimensionCount)
-                return new ComputeFunctionValuesResponseModel
-                {
-                    IsSuccessfulComputed = false,
-                    ErrorMessage = "Not equal parameters number for each point"
-                };
+            var errorMessage = MathParserServiceParametersChecker.CheckForComputeFunctionValues(request, functionDimensionCount, variables);
+
+            if (!string.IsNullOrEmpty(errorMessage))
+                return new ComputeFunctionValuesResponseModel(false, errorMessage);
 
             //parse
             var parseResult = _mathParser.TryParse(request.Expression, variables);
 
             if (!parseResult.IsSuccessfulCreated)
-                return new ComputeFunctionValuesResponseModel
-                {
-                    IsSuccessfulComputed = false,
-                    ErrorMessage = parseResult.ErrorMessage
-                };
+                return new ComputeFunctionValuesResponseModel(false, parseResult.ErrorMessage);
 
             var parsedExpression = parseResult.Expression;
 
@@ -113,9 +90,8 @@ namespace MathParserService.DL
                                 })
                                 .ToList();
 
-            return new ComputeFunctionValuesResponseModel
+            return new ComputeFunctionValuesResponseModel(true)
             {
-                IsSuccessfulComputed = true,
                 Result = result,
                 Expression = parsedExpression
             };
@@ -123,24 +99,10 @@ namespace MathParserService.DL
 
         public async Task<Compute2DIntervalPlotResponseModel> Compute2DIntervalPlot(Compute2DIntervalPlotRequestModel request)
         {
-            var result = new Compute2DIntervalPlotResponseModel(false);
-            if (request.Max <= request.Min)
-                return result with 
-                { 
-                    ErrorMessage = "Max is not bigger than Min" 
-                };
-
-            if(Math.Abs(request.Max - request.Min) < request.Step)
-                return result with
-                {
-                    ErrorMessage = "Step is bigger than interval between Max and Min"
-                };
-
-            if (request.Step <= 0)
-                return result with
-                {
-                    ErrorMessage = "Step is not bigger than zero"
-                };
+            var errorMessage = MathParserServiceParametersChecker.CheckForCompute2DIntervalPlot(request);
+            
+            if (!string.IsNullOrEmpty(errorMessage))
+                return new Compute2DIntervalPlotResponseModel(false, errorMessage);
 
             var computeFunctionRequest = new ComputeFunctionRequestModel()
             {
@@ -150,16 +112,14 @@ namespace MathParserService.DL
 
             for (var i = request.Min; i < request.Max; i += request.Step)
             {
-                var point = new List<Parameter>()
+                computeFunctionRequest.ParametersTable.Add(new List<Parameter>()
                 {
                     new Parameter
                     {
                         VariableName = "x",
                         Value = i
                     }
-                };
-
-                computeFunctionRequest.ParametersTable.Add(point);
+                });
             }
 
             computeFunctionRequest.ParametersTable.Add(new List<Parameter>()
@@ -174,10 +134,7 @@ namespace MathParserService.DL
             var computeResult = await ComputeFunctionValues(computeFunctionRequest);
 
             if (!computeResult.IsSuccessfulComputed)
-                return result with
-                {
-                    ErrorMessage = computeResult.ErrorMessage
-                };
+                return new Compute2DIntervalPlotResponseModel(false, computeResult.ErrorMessage);
 
             var mappedComputeResult = computeResult
                             .Result
@@ -188,9 +145,8 @@ namespace MathParserService.DL
                             })
                             .ToList();
 
-            return result with
+            return new Compute2DIntervalPlotResponseModel(true)
             {
-                IsSuccessfulComputed = true,
                 Result = mappedComputeResult,
                 Expression = computeResult.Expression
             };

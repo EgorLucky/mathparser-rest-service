@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MathParserService.DL.ApiModels
 { 
-    public class ComputeFunctionRequestModel
+    public record ComputeFunctionRequestModel
     {
         public string Expression { get; set; }
 

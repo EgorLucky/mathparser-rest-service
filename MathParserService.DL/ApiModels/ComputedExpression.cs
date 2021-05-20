@@ -8,11 +8,11 @@ namespace MathParserService.DL.ApiModels
 {
     public class ComputedExpression
     {
-        public string FunctionNotation { get; set; }
+        public string FunctionNotation { get; init; }
 
-        public List<ParametersAndValue> ParametersAndValues { get; set; }
+        public List<ParametersAndValue> ParametersAndValues { get; init; }
 
-        public bool LoadMore { get; set; }
+        public bool LoadMore { get; init; }
     }
 
     public class ParametersAndValue
