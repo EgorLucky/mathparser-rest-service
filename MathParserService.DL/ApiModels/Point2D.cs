@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace MathParserService.DL.ApiModels
 {
-    public class Point2D
+    public record Point2D
     {
-        public double X { get; set; }
+        public double X { get; init; }
 
-        public double Y { get; set; }
+        public double Y { get; init; }
     }
 }

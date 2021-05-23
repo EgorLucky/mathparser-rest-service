@@ -7,7 +7,7 @@ namespace MathParserService.DL.ApiModels
 {
     public class ComputeFunctionValueResult
     {
-        public double Value { get; internal set; }
-        public List<Parameter> Parameters { get; internal set; }
+        public double Value { get; internal init; }
+        public List<Parameter> Parameters { get; internal init; }
     }
 }

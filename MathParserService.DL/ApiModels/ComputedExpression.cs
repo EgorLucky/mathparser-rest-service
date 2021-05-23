@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MathParserService.DL.ApiModels
 {
-    public class ComputedExpression
+    public record ComputedExpression
     {
         public string FunctionNotation { get; init; }
 
@@ -15,10 +15,10 @@ namespace MathParserService.DL.ApiModels
         public bool LoadMore { get; init; }
     }
 
-    public class ParametersAndValue
+    public record ParametersAndValue
     {
-        public string Parameters { get; set; }
+        public string Parameters { get; init; }
 
-        public double Value { get; set; }
+        public double Value { get; init; }
     }
 }

@@ -5,8 +5,8 @@ namespace MathParserService.DL.ApiModels
 {
     public record ComputeExpressionRequestModel
     {
-        public string Expression { get; set; }
+        public string Expression { get; init; }
 
-        public List<Parameter> Parameters { get; set; } = new List<Parameter>();
+        public List<Parameter> Parameters { get; init; } = new List<Parameter>();
     }
 }

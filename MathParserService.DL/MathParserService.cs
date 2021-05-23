@@ -65,7 +65,7 @@ namespace MathParserService.DL
             var variables = request.ParametersTable
                                     .SelectMany(p => p)
                                     .Select(p => p.GetVariable())
-                                    .Distinct(new VariableEqualityComparer())
+                                    .Distinct()
                                     .ToList();
 
             var errorMessage = MathParserServiceParametersChecker.CheckForComputeFunctionValues(request, functionDimensionCount, variables);
@@ -114,21 +114,13 @@ namespace MathParserService.DL
             {
                 computeFunctionRequest.ParametersTable.Add(new List<Parameter>()
                 {
-                    new Parameter
-                    {
-                        VariableName = "x",
-                        Value = i
-                    }
+                    new Parameter("x", i)
                 });
             }
 
             computeFunctionRequest.ParametersTable.Add(new List<Parameter>()
             {
-                new Parameter
-                {
-                    VariableName = "x",
-                    Value = request.Max
-                }
+                new Parameter("x", request.Max)
             });
 
             var computeResult = await ComputeFunctionValues(computeFunctionRequest);
