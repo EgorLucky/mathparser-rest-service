@@ -21,28 +21,39 @@ namespace MathParserService.DL.Implementions
 
             CreateMap<Expression, ComputedExpression>()
                 .ForMember(e => e.FunctionNotation,
-                                options => options.MapFrom(m =>
-                                                $"F({string.Join(",", m.Parameters.Select(p => p.Name))}) = {m.ExpressionString}"))
+                                options => options.MapFrom(m => GetFunuctionStringNotation(m)))
                 .ForMember(e => e.ParametersAndValues,
-                                options => options.MapFrom(m => 
-                                                m.Points.Select(p => 
-                                                    Map(p)
-                                                )
-                                                .ToList()));
+                                options => options.MapFrom(m => m.Points.Select(p => Map(p))
+                                                                        .ToList()));
         }
 
 
         ParametersAndValue Map(Point p)
         {
+            var parameterValueListString = "";
+
+            if (p.Coordinates != null)
+            {
+                var parameterValueList = p.Coordinates?.Select(c => c.Value);
+                parameterValueListString = string.Join(",", parameterValueList);
+            }
+
             var result = new ParametersAndValue
             {
-                Parameters = p.Coordinates == null ? 
-                                    "F()" : 
-                                    $"F({string.Join(",", p.Coordinates?.Select(c => c.Value))})",
+                Parameters = $"F({parameterValueListString})",
                 Value = p.Result
             };
 
             return result;
         }
+
+        string GetFunuctionStringNotation(Expression exp)
+        {
+            var variableList = exp.Parameters.Select(p => p.Name);
+            var variableListString = string.Join(",", variableList);
+
+            return $"F({variableListString}) = {exp.ExpressionString}";
+        }
+
     }
 }
