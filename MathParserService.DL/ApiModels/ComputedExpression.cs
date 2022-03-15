@@ -8,6 +8,8 @@ namespace MathParserService.DL.ApiModels
 {
     public record ComputedExpression
     {
+        public Guid Id { get; set; }
+
         public string FunctionNotation { get; init; }
 
         public List<ParametersAndValue> ParametersAndValues { get; init; }
@@ -17,6 +19,8 @@ namespace MathParserService.DL.ApiModels
 
     public record ParametersAndValue
     {
+        public Guid Id { get; set; }
+
         public string Parameters { get; init; }
 
         public double Value { get; init; }

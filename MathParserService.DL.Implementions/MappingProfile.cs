@@ -40,6 +40,7 @@ namespace MathParserService.DL.Implementions
 
             var result = new ParametersAndValue
             {
+                Id = p.Id,
                 Parameters = $"F({parameterValueListString})",
                 Value = p.Result
             };
