@@ -34,7 +34,7 @@ namespace RestService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<EgorLucky.MathParser.MathParser>();
-            services.AddDbContext<MathParserContext>(b => b.UseNpgsql(Environment.GetEnvironmentVariable("mathParserServiceConnectionString")));
+            services.AddDbContext<MathParserContext>(b => b.UseNpgsql(Configuration.GetValue<string>("mathParserServiceConnectionString")));
             services.AddTransient<IMathParserService<Expression>, MathParserService<Expression>>();
             services.AddTransient<IDatabaseService<Expression>, ExpressionDataBaseService>();
             services.AddTransient<IRepository<Expression>, ExpressionRepository>();
