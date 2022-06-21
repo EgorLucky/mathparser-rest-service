@@ -21,7 +21,7 @@ namespace MathParserService.DL
                 expression.Id = Guid.NewGuid();
 
             if (expression.CreateDate == default)
-                expression.CreateDate = DateTimeOffset.Now;
+                expression.CreateDate = DateTimeOffset.Now.ToUniversalTime();
 
             await _repository.SaveAsync(expression);
         }

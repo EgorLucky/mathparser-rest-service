@@ -7,7 +7,7 @@ namespace MathParserService.DAL
     {
         public MathParserContext(DbContextOptions<MathParserContext> options): base(options)
         {
-
+            Database.EnsureCreated();
         }
 
         /// <summary>
